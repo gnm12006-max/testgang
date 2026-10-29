@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
   <link rel="manifest" href="manifest.json">
-  <title>나 혼자만 상한가 v3 - 인생회귀 게임</title>
+  <title>나 혼자만 상한가 v4 - 인생회귀 게임</title>
   <style>
     :root {
       --bg: #0b0e14;
@@ -415,7 +415,6 @@
       align-items: center;
     }
 
-    /* 미니 차트 컨테이너 */
     .mini-chart-wrap {
       margin-top: 8px;
       background: #0d1117;
@@ -425,7 +424,6 @@
       text-align: center;
     }
 
-    /* 토스트 알림 */
     #toast {
       position: fixed;
       top: 16px;
@@ -479,14 +477,13 @@
 <div id="app">
   <!-- ==================== 1. 캐릭터 생성 및 타이틀 화면 ==================== -->
   <div id="start-screen">
-    <div class="intro-sub">진짜로 대박나는 인생회귀 게임 v3</div>
-    <h1 class="intro-title">나 혼자만 <span>상한가</span></h1>
+    <div class="intro-sub">진짜로 대박나는 인생회귀 게임</div>
+    <h1 class="intro-title">나 혼자만 <span>상한가 v4</span></h1>
     <div class="intro-desc">
       미래를 아는 단 한 번의 인생 —<br>
-      이번엔 <b>상한가</b>와 <b>대출 레버리지</b>로 1조 클럽을 노린다!
+      증거금 무제한 배팅과 대출 레버리지로 <b>1조 클럽</b>을 노린다!
     </div>
 
-    <!-- 기존 세이브 데이터가 있을 때 뜨는 빠른 이어하기 배너 -->
     <div id="continue-box">
       <div>
         <div style="font-size:13px; font-weight:800; color:var(--green);">💾 이전 회차 이어하기</div>
@@ -508,7 +505,6 @@
       <div class="field-label">캐릭터</div>
       <div class="char-grid" id="charGrid"></div>
 
-      <!-- 오각형 레이더 차트 & 설명 -->
       <div class="stat-box">
         <div class="radar-wrap" id="radarContainer"></div>
         <div class="trait-info">
@@ -577,7 +573,6 @@
         <div id="stockList"></div>
       </div>
 
-      <!-- 선택된 종목 미니 차트 뷰 -->
       <div class="card" id="chartCardBox">
         <div class="card-title" id="chartCardTitle">📉 종목 실시간 12개월 추이</div>
         <div class="mini-chart-wrap" id="miniChartContainer">
@@ -603,14 +598,14 @@
       </div>
     </section>
 
-    <!-- 탭 3: 무제한 선물 -->
+    <!-- 탭 3: 무제한 선물 (💡 v4 요구사항 반영: 증거금 무제한 입력 가능) -->
     <section id="tab-futures" class="tab-content">
       <div class="card" style="border-color: rgba(248,81,73,0.4);">
         <div class="card-title" style="color:var(--red);">
-          ⚡ 무제한 레버리지 선물소 (Futures)
+          ⚡ 무제한 레버리지 & 증거금 선물소 (v4)
         </div>
         <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-          * 배율 제한 없음 (1배 ~ 99999배 자유 입력)<br>
+          * 배율 및 투입 증거금 제한 없음 (잔고 초과 입력 시 대출에서 자동 조달)<br>
           * 손실률이 증거금 100%를 초과하는 즉시 <b>강제청산(0원)</b> 처리됩니다.
         </div>
 
@@ -622,15 +617,15 @@
           </select>
         </div>
         <div class="input-row">
-          <input type="number" id="futuresLeverage" placeholder="레버리지 배율 (예: 10, 50, 100, 1000)" value="10" min="1">
+          <input type="number" id="futuresLeverage" placeholder="레버리지 배율 (예: 10, 100, 1000)" value="10" min="1">
         </div>
         <div class="input-row">
-          <input type="number" id="futuresMargin" placeholder="투입할 증거금 (원 단위)" min="10000">
+          <input type="number" id="futuresMargin" placeholder="투입할 증거금 (원 단위 - 무제한 입력 가능)" min="1000">
         </div>
         <div class="input-row">
           <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(0.25)">25%</button>
           <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(0.5)">50%</button>
-          <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(1.0)">풀배팅(100%)</button>
+          <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(1.0)">현금 풀배팅</button>
         </div>
         <div class="input-row" style="margin-top:12px;">
           <button class="btn btn-red" style="flex:1;" onclick="openFuturesPosition('LONG')">🔺 롱(상승) 베팅</button>
@@ -957,7 +952,7 @@ let state = {
   year: 1998,
   month: 1,
   cash: 15000000,
-  debt: 0, // 💡 v3 신규: 대출 잔액
+  debt: 0,
   jobLevel: 0,
   stocks: {},
   positions: [],
@@ -966,7 +961,7 @@ let state = {
   flexItems: [],
   marketPrices: { ...defaultStockPrices },
   nasdaqPrice: 1200,
-  priceHistory: { // 💡 v3 신규: 종목별 최근 12개월 가격 기록
+  priceHistory: {
     SAMSUNG: [30000],
     APPLE: [8000],
     NVDA: [5000],
@@ -1030,8 +1025,8 @@ const historicalEvents = {
 let selectedStockId = 'SAMSUNG';
 
 /* ==================== 4. 게임 시작 & 저장/로드 ==================== */
-const AUTO_SAVE_KEY = "SOLO_LIMIT_UP_AUTOSAVE_V3";
-const SLOT_PREFIX = "SOLO_LIMIT_UP_SLOT_V3_";
+const AUTO_SAVE_KEY = "SOLO_LIMIT_UP_AUTOSAVE_V4";
+const SLOT_PREFIX = "SOLO_LIMIT_UP_SLOT_V4_";
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1224,7 +1219,7 @@ function exportSaveFile() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `나혼자만상한가v3_${state.player.name}_${state.year}년.json`;
+  a.download = `나혼자만상한가v4_${state.player.name}_${state.year}년.json`;
   a.click();
   URL.revokeObjectURL(url);
   showToast("📥 세이브 파일 다운로드 완료!");
@@ -1306,7 +1301,6 @@ function getFuturesPrice(id) {
   return asset.getPrice();
 }
 
-// 💡 v3 신규: SVG 미니 차트 생성 함수
 function renderMiniChart(stockId) {
   const s = getStock(stockId);
   if (!s) return '';
@@ -1363,7 +1357,6 @@ function nextTurn() {
     s.price = Math.max(10, Math.floor(s.price * (1 + changePct)));
     s.lastChange = changePct;
 
-    // 가격 기록 관리 (최대 12개월 유지)
     if (!state.priceHistory[s.id]) state.priceHistory[s.id] = [];
     state.priceHistory[s.id].push(s.price);
     if (state.priceHistory[s.id].length > 12) {
@@ -1373,7 +1366,6 @@ function nextTurn() {
 
   state.nasdaqPrice = Math.max(100, Math.floor(state.nasdaqPrice * (1 + (Math.random() - 0.48) * 0.1)));
 
-  // 캐릭터 특성 보너스
   const charId = state.player.charId;
   let salaryBonus = (charId === 'STAMINA') ? 1.3 : 1.0;
   let divBonus = (charId === 'BRAIN') ? 1.2 : 1.0;
@@ -1397,7 +1389,6 @@ function nextTurn() {
     if (r) rentSum += Math.floor(r.rent * rentBonus);
   });
 
-  // 💡 v3 신규: 대출 이자 납부 (월 1.5%)
   let monthlyInterest = 0;
   if (state.debt > 0) {
     monthlyInterest = Math.floor(state.debt * 0.015);
@@ -1407,7 +1398,6 @@ function nextTurn() {
   state.cash += (income + dividendSum + rentSum);
   checkFuturesLiquidation();
 
-  // 대출 원금 초과 파산 방지 알림
   if (state.cash < 0 && state.debt > 0) {
     alert(`🚨 [자금 경고] 현금이 마이너스(-)가 되어 대출 이자 납부가 지연되고 있습니다! 포지션을 정리하거나 대출을 상환하세요.`);
   }
@@ -1426,7 +1416,7 @@ ${vItem.name} 지분이 상장되어 +${fmt(reward)} 회수 완료!`);
   renderAll();
 }
 
-/* ==================== 7. 대출 및 선물 시스템 ==================== */
+/* ==================== 7. 대출 및 선물 시스템 (💡 v4 핵심: 증거금 무제한/부족분 대출 자동 조달) ==================== */
 function getMaxLoanLimit() {
   const baseLimit = [10000000, 50000000, 200000000, 1000000000, 5000000000];
   return baseLimit[state.jobLevel] || 10000000;
@@ -1485,9 +1475,24 @@ function openFuturesPosition(type) {
     alert("투입할 증거금을 입력하세요.");
     return;
   }
+
+  // 💡 v4 요구사항 반영: 증거금이 보유 현금을 초과할 경우, 부족분을 미래은행 대출 한도 내에서 자동으로 영끌 대출 실행!
   if (margin > state.cash) {
-    alert("현금이 부족합니다!");
-    return;
+    const shortage = margin - state.cash;
+    const limit = getMaxLoanLimit();
+    const availableLoan = limit - state.debt;
+
+    if (shortage > availableLoan) {
+      alert(`🚨 증거금 무제한 베팅 실패!
+필요한 증거금(${fmt(margin)}) 중 부족한 금액(${fmt(shortage)})이 현재 대출 한도(${fmt(availableLoan)})를 초과합니다. 승진을 먼저 하세요!`);
+      return;
+    }
+
+    // 자동 대출 실행으로 증거금 마련
+    state.debt += shortage;
+    state.cash += shortage;
+    alert(`🏦 [자동 영끌 대출 발동]
+현금이 부족하여 부족한 증거금 ${fmt(shortage)}만큼 자동으로 미래은행 대출이 실행되었습니다!`);
   }
 
   state.cash -= margin;
@@ -1503,7 +1508,7 @@ function openFuturesPosition(type) {
   });
 
   saveGameToStorage(AUTO_SAVE_KEY, false);
-  showToast(`⚡ ${symbol} ${type} ${leverage}배 진입!`);
+  showToast(`⚡ ${symbol} ${type} ${leverage}배 진입 완료!`);
   document.getElementById('futuresMargin').value = '';
   renderAll();
 }
@@ -1709,7 +1714,6 @@ function renderAll() {
   document.getElementById('summaryPnl').innerHTML = `<span class="${pnl >= 0 ? 'up' : 'down'}">${pnl >= 0 ? '+' : ''}${fmt(pnl)}</span>`;
   document.getElementById('summaryRealEstate').innerText = fmt(realEstateValue);
 
-  // 대출 탭 상태 갱신
   document.getElementById('loanStatusText').innerText = fmt(state.debt);
   document.getElementById('loanInterestText').innerText = fmt(Math.floor(state.debt * 0.015)) + " /월";
 
@@ -1733,7 +1737,6 @@ function renderAll() {
     document.getElementById('newsText').innerText = historicalEvents[newsKey];
   }
 
-  // 주식 리스트
   let stockHtml = '';
   stockData.forEach(s => {
     if (s.unlockYear && state.year < s.unlockYear) return;
@@ -1757,12 +1760,10 @@ function renderAll() {
   });
   document.getElementById('stockList').innerHTML = stockHtml;
 
-  // 미니 차트 실시간 갱신
   if (selectedStockId) {
     document.getElementById('miniChartContainer').innerHTML = renderMiniChart(selectedStockId);
   }
 
-  // 선물 포지션 리스트
   if (state.positions.length === 0) {
     document.getElementById('positionList').innerHTML = "보유 중인 선물 포지션이 없습니다.";
   } else {
@@ -1791,7 +1792,6 @@ function renderAll() {
     document.getElementById('positionList').innerHTML = posHtml;
   }
 
-  // 부동산/벤처
   let reHtml = '';
   realEstateData.forEach(r => {
     const owned = state.realEstates.includes(r.id);
@@ -1828,7 +1828,6 @@ function renderAll() {
   });
   document.getElementById('ventureList').innerHTML = vHtml;
 
-  // 직급 & 플렉스
   const nextJob = jobs[state.jobLevel + 1];
   const discountJob = (state.player.charId === 'BRAIN') ? 0.75 : 1.0;
   let jobHtml = `
@@ -1876,7 +1875,6 @@ function setFuturesMarginRatio(ratio) {
   document.getElementById('futuresMargin').value = Math.floor(state.cash * ratio);
 }
 
-// 초기 실행
 renderCharacterCreator();
 checkExistingAutoSave();
 </script>
