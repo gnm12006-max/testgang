@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
   <link rel="manifest" href="manifest.json">
-  <title>나 혼자만 상한가 v5 - 인생회귀 게임</title>
+  <title>나 혼자만 상한가 v6 - 인생회귀 게임</title>
   <style>
     :root {
       --bg: #0b0e14;
@@ -482,6 +482,50 @@
     .ach-item.done { opacity:1; border-color:var(--accent); }
     .ach-item b { display:block; font-size:12px; margin-bottom:2px; }
     #toast { z-index: 9500; }
+
+    /* ===== 시작 화면 리뉴얼 (히어로 스타일) ===== */
+    #start-screen { padding: 18px 14px 36px; background: radial-gradient(circle at 50% 0%, rgba(242,185,56,0.10), rgba(11,14,20,0) 55%), linear-gradient(180deg, #0f1420 0%, #0b0e14 100%); }
+    .hero-head { margin-bottom: 12px; }
+    .hero-head .intro-title { font-size: 28px; margin: 0; }
+    .hero-stage { position: relative; height: 400px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(242,185,56,0.35); box-shadow: 0 14px 40px rgba(0,0,0,0.55), inset 0 0 60px rgba(0,0,0,0.5); background: #0b0e14; }
+    .hero-bg, .hero-bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-glow { position: absolute; left: 50%; bottom: 40px; width: 300px; height: 300px; transform: translateX(-50%); border-radius: 50%; filter: blur(46px); opacity: 0.55; transition: background 0.3s; }
+    .hero-figure { position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); width: 300px; height: 340px; filter: drop-shadow(0 10px 22px rgba(0,0,0,0.65)); }
+    .hero-figure.pop { animation: heroPop 0.35s ease-out; }
+    @keyframes heroPop { from { opacity: 0; transform: translateX(-50%) translateY(14px) scale(0.96); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+    .hero-chip { position: absolute; z-index: 3; background: rgba(12,16,26,0.78); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #f0f6fc; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
+    .hero-chip-date { top: 12px; left: 12px; color: var(--accent); border-color: rgba(242,185,56,0.5); }
+    .hero-chip-cash { top: 12px; right: 12px; }
+    .hero-chip-name { top: 50px; left: 12px; }
+    .hero-caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 34px 16px 14px; background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,0.88) 55%); }
+    .hero-caption-top { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--accent); }
+    .hero-tag { background: rgba(242,185,56,0.22); border: 1px solid rgba(242,185,56,0.6); color: var(--accent); font-size: 11px; padding: 1px 8px; border-radius: 999px; }
+    .hero-headline { font-size: 17px; font-weight: 800; margin-top: 4px; line-height: 1.35; }
+
+    .stat-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 10px; background: rgba(21,25,33,0.92); border: 1px solid var(--border); border-radius: 14px; padding: 10px 6px 8px; }
+    .stat-tile { text-align: center; }
+    .stat-tile .num { font-size: 22px; font-weight: 900; line-height: 1.1; }
+    .stat-tile .lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .stat-tile .bar { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 5px 6px 0; overflow: hidden; }
+    .stat-tile .bar i { display: block; height: 100%; border-radius: 3px; }
+
+    .char-strip { display: flex; gap: 10px; overflow-x: auto; padding: 6px 4px 10px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+    .char-strip::-webkit-scrollbar { display: none; }
+    .char-strip .char-card { flex: 0 0 66px; background: transparent; border: none; box-shadow: none; transform: none; scroll-snap-align: center; overflow: visible; }
+    .char-strip .char-portrait { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.18); transition: all 0.15s; }
+    .char-strip .char-card.active { transform: none; box-shadow: none; }
+    .char-strip .char-card.active .char-portrait { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(242,185,56,0.25), 0 0 16px rgba(242,185,56,0.55); transform: scale(1.1); }
+    .char-strip .char-name-bar { background: transparent; border: none; font-size: 11px; padding: 6px 0 0; color: var(--text-muted); }
+    .char-strip .char-card.active .char-name-bar { background: transparent; color: var(--accent); }
+
+    .name-row { display: flex; gap: 10px; align-items: flex-start; }
+    .name-row .name-input { padding: 13px 14px; }
+    .name-row .field-label { margin-top: 0; }
+    .name-row .gender-btn { padding: 12px 4px; }
+    .setup-panel .stat-box { margin-top: 14px; }
+    #start-screen .start-btn { background: linear-gradient(180deg, #f7cf6a 0%, #e0a21f 100%); color: #1a1405; font-weight: 900; font-size: 17px; letter-spacing: 0.5px; border: none; border-radius: 14px; padding: 16px; box-shadow: 0 8px 22px rgba(242,185,56,0.35), inset 0 1px 0 rgba(255,255,255,0.45); }
+    #start-screen .start-btn:active { transform: translateY(1px); }
+
   </style>
 </head>
 <body>
@@ -491,11 +535,9 @@
 <div id="app">
   <!-- ==================== 1. 캐릭터 생성 및 타이틀 화면 ==================== -->
   <div id="start-screen">
-    <div class="intro-sub">진짜로 대박나는 인생회귀 게임</div>
-    <h1 class="intro-title">나 혼자만 <span>상한가 v5</span></h1>
-    <div class="intro-desc">
-      미래를 아는 단 한 번의 인생 —<br>
-      최대 100배 레버리지와 대출 영끌로 <b>1조 클럽</b>을 노린다!
+    <div class="hero-head">
+      <div class="intro-sub">진짜로 대박나는 인생회귀 게임</div>
+      <h1 class="intro-title">나 혼자만 <span>상한가 v6</span></h1>
     </div>
 
     <div id="continue-box">
@@ -506,18 +548,39 @@
       <button class="btn btn-green btn-sm" onclick="loadAutoSaveAndStart()">이어하기</button>
     </div>
 
-    <div class="setup-panel">
-      <div class="field-label">이름</div>
-      <input type="text" id="playerNameInput" class="name-input" placeholder="이름을 지어주세요" maxlength="12">
-
-      <div class="field-label">성별</div>
-      <div class="gender-row">
-        <button class="gender-btn active" id="genderMaleBtn" onclick="selectGender('M')">남자</button>
-        <button class="gender-btn" id="genderFemaleBtn" onclick="selectGender('F')">여자</button>
+    <!-- 히어로 스테이지: 큰 캐릭터 + 야경 배경 -->
+    <div class="hero-stage" id="heroStage">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-glow" id="heroGlow"></div>
+      <div class="hero-chip hero-chip-date">1998년 1월 · IMF 외환위기</div>
+      <div class="hero-chip hero-chip-cash" id="heroCash">💰 1,500만 원</div>
+      <div class="hero-figure" id="heroFigure"></div>
+      <div class="hero-chip hero-chip-name" id="heroName">성진우 · 기본형</div>
+      <div class="hero-caption">
+        <div class="hero-caption-top"><span>회귀일보 · 1998.01</span><span class="hero-tag">예보</span></div>
+        <div class="hero-headline" id="heroHeadline">기본형 — 균형 잡힌 시작</div>
       </div>
+    </div>
 
-      <div class="field-label">캐릭터</div>
-      <div class="char-grid" id="charGrid"></div>
+    <div class="stat-tiles" id="statTiles"></div>
+
+    <div class="field-label" style="margin-top:14px;">캐릭터 선택</div>
+    <div class="char-strip" id="charGrid"></div>
+
+    <div class="setup-panel">
+      <div class="name-row">
+        <div style="flex:1;">
+          <div class="field-label">이름</div>
+          <input type="text" id="playerNameInput" class="name-input" placeholder="이름을 지어주세요" maxlength="12" oninput="updateHeroName()">
+        </div>
+        <div style="width:150px;">
+          <div class="field-label">성별</div>
+          <div class="gender-row">
+            <button class="gender-btn active" id="genderMaleBtn" onclick="selectGender('M')">남자</button>
+            <button class="gender-btn" id="genderFemaleBtn" onclick="selectGender('F')">여자</button>
+          </div>
+        </div>
+      </div>
 
       <div class="stat-box">
         <div class="radar-wrap" id="radarContainer"></div>
@@ -528,7 +591,7 @@
         </div>
       </div>
 
-      <button class="start-btn" onclick="startNewGame()">1998년으로 회귀 시작하기</button>
+      <button class="start-btn" onclick="startNewGame()">1998년으로 회귀 시작 ▶</button>
     </div>
   </div>
 
@@ -936,7 +999,72 @@ function renderRadarSVG(stats) {
   </svg>`;
 }
 
-function renderCharacterCreator() {
+
+const STAT_COLORS = { int: '#5b8def', charm: '#ff7ab6', sta: '#3fb950', net: '#b48cff', act: '#f2b938' };
+
+function buildHeroBg() {
+  let seed = 7;
+  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  let svg = '<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1222"/><stop offset="0.55" stop-color="#2a2a4a"/><stop offset="1" stop-color="#7a4e5f"/></linearGradient></defs>';
+  svg += '<rect width="400" height="400" fill="url(#sky)"/>';
+  for (let i = 0; i < 40; i++) svg += `<circle cx="${(rnd() * 400).toFixed(0)}" cy="${(rnd() * 150).toFixed(0)}" r="${(rnd() * 0.9 + 0.3).toFixed(1)}" fill="#fff" opacity="${(rnd() * 0.6 + 0.2).toFixed(2)}"/>`;
+  [['#141a2c', 0.9, 130, 250], ['#0c101c', 1, 90, 190]].forEach(([fill, op, minH, maxH], layer) => {
+    let x = -10;
+    while (x < 410) {
+      const w = 28 + rnd() * 34, h = minH + rnd() * (maxH - minH), y = 400 - h;
+      svg += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="${fill}" opacity="${op}"/>`;
+      if (layer === 1 && rnd() < 0.5) svg += `<rect x="${(x + w / 2 - 1).toFixed(0)}" y="${(y - 18).toFixed(0)}" width="2" height="18" fill="${fill}"/>`;
+      const cols = Math.floor(w / 9), rows = Math.floor(h / 13);
+      for (let r = 1; r < rows; r++) for (let c = 0; c < cols; c++) {
+        if (rnd() < (layer === 1 ? 0.34 : 0.2)) svg += `<rect x="${(x + 4 + c * 9).toFixed(0)}" y="${(y + 6 + r * 13).toFixed(0)}" width="4" height="6" fill="#ffd27a" opacity="${(rnd() * 0.6 + 0.3).toFixed(2)}"/>`;
+      }
+      x += w + 2 + rnd() * 4;
+    }
+  });
+  svg += '</svg>';
+  document.getElementById('heroBg').innerHTML = svg;
+}
+
+function getHeroAvatarSVG(preset, gender) {
+  const base = getAvatarSVG(preset, gender).replace('</svg>', '');
+  const extra = `
+    <path d="M40 70 L50 92 L60 70 L55 70 L50 80 L45 70 Z" fill="rgba(0,0,0,0.25)"/>
+    <path d="M16 100 Q20 70 50 70 Q80 70 84 100 Z" fill="url(#shade)" opacity="0.5"/>
+    <ellipse cx="50" cy="42" rx="19" ry="22" fill="url(#faceShade)"/>`;
+  const defs = `<defs>
+      <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0.45"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.08"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></linearGradient>
+      <radialGradient id="faceShade" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="1" stop-color="#a0603c" stop-opacity="0.22"/></radialGradient>
+    </defs>`;
+  return base.replace(/(<svg[^>]*>)/, '$1' + defs) + extra + '</svg>';
+}
+
+function updateHeroName() {
+  const cur = characterPresets.find(x => x.id === selectedCharId);
+  const nm = document.getElementById('playerNameInput').value.trim() || '성진우';
+  document.getElementById('heroName').innerText = `${nm} · ${cur.name}`;
+}
+
+function renderHero(cur, animate) {
+  document.getElementById('heroGlow').style.background = cur.clothes;
+  const fig = document.getElementById('heroFigure');
+  fig.innerHTML = getHeroAvatarSVG(cur, selectedGender);
+  if (animate) { fig.classList.remove('pop'); void fig.offsetWidth; fig.classList.add('pop'); }
+  document.getElementById('heroCash').innerText = '💰 초기자금 ' + fmt(cur.initCash);
+  document.getElementById('heroHeadline').innerText = cur.headline;
+  updateHeroName();
+  const labels = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '행동력' };
+  document.getElementById('statTiles').innerHTML = Object.keys(labels).map(k => `
+    <div class="stat-tile">
+      <div class="num" style="color:${STAT_COLORS[k]};">${cur.stats[k]}</div>
+      <div class="lbl">${labels[k]}</div>
+      <div class="bar"><i style="width:${Math.min(100, cur.stats[k] / 25 * 100)}%; background:${STAT_COLORS[k]};"></i></div>
+    </div>`).join('');
+}
+
+let heroBgBuilt = false;
+
+function renderCharacterCreator(animate) {
   const grid = document.getElementById('charGrid');
   let html = '';
   characterPresets.forEach(c => {
@@ -950,25 +1078,30 @@ function renderCharacterCreator() {
       </div>
     `;
   });
+  const keepScroll = grid.scrollLeft;
   grid.innerHTML = html;
+  grid.scrollLeft = keepScroll;
 
   const cur = characterPresets.find(x => x.id === selectedCharId);
   document.getElementById('radarContainer').innerHTML = renderRadarSVG(cur.stats);
   document.getElementById('traitTitle').innerText = cur.headline;
   document.getElementById('traitDesc').innerText = cur.desc;
   document.getElementById('traitBonus').innerText = "✨ 특전: " + cur.bonusText;
+
+  if (!heroBgBuilt) { buildHeroBg(); heroBgBuilt = true; }
+  renderHero(cur, animate);
 }
 
 function selectGender(g) {
   selectedGender = g;
   document.getElementById('genderMaleBtn').classList.toggle('active', g === 'M');
   document.getElementById('genderFemaleBtn').classList.toggle('active', g === 'F');
-  renderCharacterCreator();
+  renderCharacterCreator(true);
 }
 
 function selectCharacter(id) {
   selectedCharId = id;
-  renderCharacterCreator();
+  renderCharacterCreator(true);
 }
 
 /* ==================== 3. 게임 상태 및 데이터 ==================== */
@@ -1358,14 +1491,13 @@ function importSaveFile(event) {
 /* ==================== 5. 유틸리티 & 차트 렌더링 ==================== */
 function fmt(num) {
   num = Math.floor(num);
-  if (Math.abs(num) >= 1000000000000) {
-    return (num / 1000000000000).toFixed(2) + "조 원";
-  } else if (Math.abs(num) >= 100000000) {
-    return (num / 100000000).toFixed(2) + "억 원";
-  } else if (Math.abs(num) >= 10000) {
-    return (num / 10000).toFixed(0) + "만 원";
-  }
-  return num.toLocaleString() + "원";
+  const a = Math.abs(num);
+  const nf = (v) => Number(v.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  if (a >= 1e16) return nf(num / 1e16) + "경 원";
+  if (a >= 1e12) return nf(num / 1e12) + "조 원";
+  if (a >= 1e8) return nf(num / 1e8) + "억 원";
+  if (a >= 1e4) return nf(num / 1e4) + "만 원";
+  return num.toLocaleString('en-US') + "원";
 }
 
 function getStock(id) {
