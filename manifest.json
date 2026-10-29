@@ -1,0 +1,9 @@
+{
+  "name": "나 혼자만 상한가 v3",
+  "short_name": "나혼자상한가v3",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "orientation": "portrait"
+}

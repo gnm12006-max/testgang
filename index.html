@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0e14">
+  <link rel="manifest" href="manifest.json">
+  <title>나 혼자만 상한가 v3 - 인생회귀 게임</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card-bg: #151921;
+      --card-inner: #1c222d;
+      --border: #2b3240;
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --red: #f85149;
+      --blue: #5b8def;
+      --accent: #f2b938;
+      --green: #3fb950;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      overflow-x: hidden;
+      user-select: none;
+    }
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: var(--bg);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    /* ================= 시작/캐릭터 생성 화면 ================= */
+    #start-screen {
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+      background: radial-gradient(circle at 50% 10%, rgba(242, 185, 56, 0.14), rgba(11, 14, 20, 0.98) 45%),
+                  linear-gradient(180deg, #131822 0%, #0b0e14 100%);
+      display: flex;
+      flex-direction: column;
+    }
+    .intro-sub {
+      font-size: 13px;
+      color: #c9a769;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .intro-title {
+      font-size: 32px;
+      font-weight: 900;
+      margin: 0 0 10px 0;
+      letter-spacing: -1px;
+    }
+    .intro-title span {
+      color: var(--accent);
+      text-shadow: 0 0 16px rgba(242, 185, 56, 0.35);
+    }
+    .intro-desc {
+      font-size: 13px;
+      color: #b1bac4;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .intro-desc b { color: var(--green); }
+
+    /* 불러오기 배너 */
+    #continue-box {
+      background: linear-gradient(135deg, rgba(63, 185, 80, 0.16), rgba(28, 34, 45, 0.9));
+      border: 1px solid rgba(63, 185, 80, 0.45);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .setup-panel {
+      background: rgba(21, 25, 33, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+    .field-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+      margin-top: 14px;
+    }
+    .field-label:first-child { margin-top: 0; }
+    .name-input {
+      width: 100%;
+      background: #0d1017;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .name-input:focus { border-color: var(--blue); outline: none; }
+
+    .gender-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .gender-btn {
+      background: #1c212b;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gender-btn.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      box-shadow: 0 4px 14px rgba(91, 141, 239, 0.35);
+    }
+
+    /* 캐릭터 7종 그리드 */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .char-card {
+      background: #1c212b;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .char-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(242, 185, 56, 0.35);
+      transform: translateY(-2px);
+    }
+    .char-portrait {
+      width: 100%;
+      height: 82px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .char-name-bar {
+      width: 100%;
+      background: #141820;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 2px;
+      color: #c9d1d9;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .char-card.active .char-name-bar {
+      color: var(--accent);
+      background: #1f1b12;
+    }
+
+    /* 오각형 스탯 레이더 & 설명 박스 */
+    .stat-box {
+      margin-top: 14px;
+      background: #0d1017;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .trait-info {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #b1bac4;
+    }
+    .trait-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .trait-bonus {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .start-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(90deg, #f2b938, #e08e24);
+      color: #000;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(242, 185, 56, 0.3);
+    }
+
+    /* ================= 본 게임 화면 ================= */
+    #game-screen {
+      display: none;
+      padding-bottom: 78px;
+    }
+    header {
+      background-color: var(--card-bg);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .player-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mini-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1c222d;
+    }
+    .date-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(242, 185, 56, 0.15);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .save-top-btn {
+      background: #21262d;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .asset-val {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-top: 8px;
+    }
+    .sub-asset {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .tab-content { display: none; padding: 14px 16px; }
+    .tab-content.active { display: block; }
+
+    .news-card {
+      background: linear-gradient(135deg, rgba(91,141,239,0.12), rgba(242,185,56,0.06));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .news-title { font-size: 12px; color: var(--accent); font-weight: 700; }
+    .news-body { font-size: 13px; margin-top: 4px; line-height: 1.45; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.7; }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-blue { background: var(--blue); color: #fff; }
+    .btn-gold { background: var(--accent); color: #000; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-dark { background: #21262d; color: var(--text); border: 1px solid var(--border); }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+
+    .turn-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #1f6feb, #238636);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stock-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+    }
+    .stock-item:last-child { border-bottom: none; }
+    .stock-name { font-weight: 700; font-size: 14px; }
+    .stock-desc { font-size: 11px; color: var(--text-muted); }
+    .stock-price { font-weight: 700; font-size: 14px; text-align: right; }
+    .up { color: var(--red); }
+    .down { color: var(--blue); }
+
+    .trade-box {
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+    input, select, textarea {
+      background: #161b22;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue); outline: none; }
+
+    .pos-item {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .slot-box {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 미니 차트 컨테이너 */
+    .mini-chart-wrap {
+      margin-top: 8px;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px;
+      text-align: center;
+    }
+
+    /* 토스트 알림 */
+    #toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(35, 134, 54, 0.95);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      z-index: 999;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .nav-btn.active { color: var(--accent); }
+    .nav-icon { font-size: 17px; }
+  </style>
+</head>
+<body>
+
+<div id="toast">저장되었습니다!</div>
+
+<div id="app">
+  <!-- ==================== 1. 캐릭터 생성 및 타이틀 화면 ==================== -->
+  <div id="start-screen">
+    <div class="intro-sub">진짜로 대박나는 인생회귀 게임 v3</div>
+    <h1 class="intro-title">나 혼자만 <span>상한가</span></h1>
+    <div class="intro-desc">
+      미래를 아는 단 한 번의 인생 —<br>
+      이번엔 <b>상한가</b>와 <b>대출 레버리지</b>로 1조 클럽을 노린다!
+    </div>
+
+    <!-- 기존 세이브 데이터가 있을 때 뜨는 빠른 이어하기 배너 -->
+    <div id="continue-box">
+      <div>
+        <div style="font-size:13px; font-weight:800; color:var(--green);">💾 이전 회차 이어하기</div>
+        <div style="font-size:11px; color:#c9d1d9; margin-top:2px;" id="continueSummary">저장된 데이터가 있습니다.</div>
+      </div>
+      <button class="btn btn-green btn-sm" onclick="loadAutoSaveAndStart()">이어하기</button>
+    </div>
+
+    <div class="setup-panel">
+      <div class="field-label">이름</div>
+      <input type="text" id="playerNameInput" class="name-input" placeholder="이름을 지어주세요" maxlength="12">
+
+      <div class="field-label">성별</div>
+      <div class="gender-row">
+        <button class="gender-btn active" id="genderMaleBtn" onclick="selectGender('M')">남자</button>
+        <button class="gender-btn" id="genderFemaleBtn" onclick="selectGender('F')">여자</button>
+      </div>
+
+      <div class="field-label">캐릭터</div>
+      <div class="char-grid" id="charGrid"></div>
+
+      <!-- 오각형 레이더 차트 & 설명 -->
+      <div class="stat-box">
+        <div class="radar-wrap" id="radarContainer"></div>
+        <div class="trait-info">
+          <div class="trait-title" id="traitTitle">기본형 — 균형 잡힌 시작</div>
+          <div id="traitDesc">어느 한쪽으로도 치우치지 않는다. 처음 하는 사람에게 무난하고, 어떤 길로 가든 막히는 곳이 없다.</div>
+          <div class="trait-bonus" id="traitBonus">초기자금 1,000만 원</div>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startNewGame()">1998년으로 회귀 시작하기</button>
+    </div>
+  </div>
+
+  <!-- ==================== 2. 메인 게임 화면 ==================== -->
+  <div id="game-screen">
+    <header>
+      <div class="header-top">
+        <div class="player-badge">
+          <div class="mini-avatar" id="hudAvatar"></div>
+          <div>
+            <div style="font-size:13px; font-weight:800;" id="hudPlayerName">홍길동</div>
+            <div style="font-size:11px; color:var(--accent);" id="hudJob">알바생</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="date-badge" id="hudDate">1998년 1월</span>
+          <button class="save-top-btn" onclick="manualQuickSave()">💾 저장</button>
+        </div>
+      </div>
+      <div class="asset-val" id="hudNetWorth">순자산: 1,000만 원</div>
+      <div class="sub-asset">보유 현금: <span id="hudCash" style="color:#fff;">1,000만 원</span> | 대출 잔액: <span id="hudDebt" style="color:var(--red);">0원</span></div>
+    </header>
+
+    <!-- 탭 1: 대시보드 -->
+    <section id="tab-home" class="tab-content active">
+      <button class="btn turn-btn" onclick="nextTurn()">⏳ 1개월 후로 진행하기 (자동저장)</button>
+      
+      <div class="news-card">
+        <div class="news-title">📢 역사 헤드라인 뉴스</div>
+        <div class="news-body" id="newsText">1998년 대한민국 외환위기 발생. IMF 구제금융 돌입과 함께 증시 폭락. 그러나 미래를 아는 당신에겐 일생일대의 기회!</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">내 캐릭터 능력치 & 포트폴리오</div>
+        <div style="font-size: 12px; color: var(--accent); margin-bottom: 8px;" id="summaryStats"></div>
+        <div style="font-size: 13px; line-height: 1.8;">
+          <div>📈 주식 평가금: <b id="summaryStock">0원</b></div>
+          <div>⚡ 선물 포지션 가치: <b id="summaryFutures">0원</b> (미실현손익: <span id="summaryPnl">0원</span>)</div>
+          <div>🏢 부동산/벤처 자산: <b id="summaryRealEstate">0원</b></div>
+          <div>💸 월 고정 수입(월급+배당+월세): <b id="summaryIncome" style="color:var(--green);">80만 원</b></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">보유 장비 및 플렉스</div>
+        <div id="summaryGear" style="font-size: 13px; color: var(--text-muted);">
+          보유 중인 플렉스 아이템이 없습니다.
+        </div>
+      </div>
+    </section>
+
+    <!-- 탭 2: 현물 주식 & 미니 차트 -->
+    <section id="tab-stocks" class="tab-content">
+      <div class="card">
+        <div class="card-title">현물 거래소 (종목 클릭시 12개월 차트)</div>
+        <div id="stockList"></div>
+      </div>
+
+      <!-- 선택된 종목 미니 차트 뷰 -->
+      <div class="card" id="chartCardBox">
+        <div class="card-title" id="chartCardTitle">📉 종목 실시간 12개월 추이</div>
+        <div class="mini-chart-wrap" id="miniChartContainer">
+          종목을 선택하면 차트가 표시됩니다.
+        </div>
+      </div>
+
+      <div class="card trade-box">
+        <div class="card-title" style="margin-bottom:6px;">현물 주문창</div>
+        <div style="font-size:12px; color:var(--text-muted);" id="selectedStockInfo">종목을 선택해주세요.</div>
+        <div class="input-row">
+          <button class="btn btn-dark btn-sm" onclick="setStockBuyRatio(0.1)">10%</button>
+          <button class="btn btn-dark btn-sm" onclick="setStockBuyRatio(0.5)">50%</button>
+          <button class="btn btn-dark btn-sm" onclick="setStockBuyRatio(1.0)">풀매수</button>
+        </div>
+        <div class="input-row">
+          <input type="number" id="stockTradeAmount" placeholder="매매 수량 입력" min="1">
+        </div>
+        <div class="input-row" style="margin-top:10px;">
+          <button class="btn btn-red" style="flex:1;" onclick="executeStockTrade(true)">매수 (BUY)</button>
+          <button class="btn btn-blue" style="flex:1;" onclick="executeStockTrade(false)">매도 (SELL)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 탭 3: 무제한 선물 -->
+    <section id="tab-futures" class="tab-content">
+      <div class="card" style="border-color: rgba(248,81,73,0.4);">
+        <div class="card-title" style="color:var(--red);">
+          ⚡ 무제한 레버리지 선물소 (Futures)
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+          * 배율 제한 없음 (1배 ~ 99999배 자유 입력)<br>
+          * 손실률이 증거금 100%를 초과하는 즉시 <b>강제청산(0원)</b> 처리됩니다.
+        </div>
+
+        <div class="input-row">
+          <select id="futuresAssetSelect">
+            <option value="SAMSUNG">삼송전자 선물</option>
+            <option value="NASDAQ">미국 나스닥 지수선물</option>
+            <option value="BTC">비트코인 무기한 선물</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <input type="number" id="futuresLeverage" placeholder="레버리지 배율 (예: 10, 50, 100, 1000)" value="10" min="1">
+        </div>
+        <div class="input-row">
+          <input type="number" id="futuresMargin" placeholder="투입할 증거금 (원 단위)" min="10000">
+        </div>
+        <div class="input-row">
+          <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(0.25)">25%</button>
+          <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(0.5)">50%</button>
+          <button class="btn btn-dark btn-sm" onclick="setFuturesMarginRatio(1.0)">풀배팅(100%)</button>
+        </div>
+        <div class="input-row" style="margin-top:12px;">
+          <button class="btn btn-red" style="flex:1;" onclick="openFuturesPosition('LONG')">🔺 롱(상승) 베팅</button>
+          <button class="btn btn-blue" style="flex:1;" onclick="openFuturesPosition('SHORT')">🔻 숏(하락) 베팅</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">오픈 포지션 내역</div>
+        <div id="positionList" style="font-size:13px; color:var(--text-muted);">보유 중인 선물 포지션이 없습니다.</div>
+      </div>
+    </section>
+
+    <!-- 탭 4: 부동산 & 벤처 & 은행(대출) -->
+    <section id="tab-assets" class="tab-content">
+      <div class="card" style="border-color: rgba(91,141,239,0.4);">
+        <div class="card-title" style="color:var(--blue);">
+          🏦 미래은행 영끌 대출소 (Loan)
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+          * 신용도와 직급에 따라 대출 한도가 늘어납니다 (월 이자 1.5% 부과).
+        </div>
+        <div style="font-size:13px; margin-bottom:8px;">
+          현재 대출 잔액: <b id="loanStatusText" style="color:var(--red);">0원</b> (월 이자: <span id="loanInterestText">0원</span>)
+        </div>
+        <div class="input-row">
+          <input type="number" id="loanAmountInput" placeholder="대출/상환할 금액 입력" min="100000">
+        </div>
+        <div class="input-row" style="margin-top:8px;">
+          <button class="btn btn-blue" style="flex:1;" onclick="takeLoan()">대출 실행 (+)</button>
+          <button class="btn btn-dark" style="flex:1;" onclick="repayLoan()">대출 상환 (-)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">부동산 매매 (월세/시세차익)</div>
+        <div id="realEstateList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">비상장 벤처 엔젤투자 (대박 or 쪽박)</div>
+        <div id="ventureList"></div>
+      </div>
+    </section>
+
+    <!-- 탭 5: 플렉스 & 스펙업 -->
+    <section id="tab-flex" class="tab-content">
+      <div class="card">
+        <div class="card-title">직업 승진 및 스펙업</div>
+        <div id="jobList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">플렉스 상점 (슈퍼카/거주지)</div>
+        <div id="flexList"></div>
+      </div>
+    </section>
+
+    <!-- 탭 6: 저장 / 불러오기 시스템 -->
+    <section id="tab-save" class="tab-content">
+      <div class="card">
+        <div class="card-title">💾 슬롯 저장 & 불러오기</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+          * 매 턴 진행 시 자동 저장되며, 원하는 시점을 아래 3개 슬롯에 따로 보관할 수 있습니다.
+        </div>
+        <div id="saveSlotsContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📦 세이브 파일 백업 / 기기 이전</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+          세이브 데이터를 파일(.json)로 다운로드하거나, 복사한 코드로 다른 기기에서도 그대로 불러올 수 있습니다.
+        </div>
+        <div class="input-row">
+          <button class="btn btn-gold btn-sm" style="flex:1;" onclick="exportSaveFile()">📥 세이브 파일 다운로드</button>
+          <button class="btn btn-dark btn-sm" style="flex:1;" onclick="copySaveCode()">📋 세이브 코드 복사</button>
+        </div>
+        <div class="input-row" style="margin-top:10px;">
+          <textarea id="importCodeArea" rows="2" placeholder="여기에 복사한 세이브 코드를 붙여넣으세요"></textarea>
+        </div>
+        <div class="input-row">
+          <button class="btn btn-blue btn-sm" style="flex:1;" onclick="importSaveCode()">🔄 코드로 불러오기</button>
+          <label class="btn btn-dark btn-sm" style="flex:1; text-align:center;">
+            📂 파일 열기 <input type="file" accept=".json" style="display:none;" onchange="importSaveFile(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ 게임 초기화 / 캐릭터 다시 만들기</div>
+        <button class="btn btn-dark" style="width:100%; color:var(--red);" onclick="goToTitleScreen()">타이틀 화면(캐릭터 선택)으로 돌아가기</button>
+      </div>
+    </section>
+
+    <!-- 하단 내비게이션 -->
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('home')">
+        <span class="nav-icon">📊</span>홈
+      </button>
+      <button class="nav-btn" onclick="switchTab('stocks')">
+        <span class="nav-icon">📈</span>현물차트
+      </button>
+      <button class="nav-btn" onclick="switchTab('futures')">
+        <span class="nav-icon">⚡</span>무제한선물
+      </button>
+      <button class="nav-btn" onclick="switchTab('assets')">
+        <span class="nav-icon">🏦</span>대출/부동산
+      </button>
+      <button class="nav-btn" onclick="switchTab('flex')">
+        <span class="nav-icon">👑</span>플렉스
+      </button>
+      <button class="nav-btn" onclick="switchTab('save')">
+        <span class="nav-icon">💾</span>저장/로드
+      </button>
+    </nav>
+  </div>
+</div>
+
+<script>
+/* ==================== 1. 캐릭터 생성 프리셋 ==================== */
+const characterPresets = [
+  {
+    id: "BASIC",
+    name: "기본형",
+    headline: "기본형 — 균형 잡힌 시작",
+    desc: "어느 한쪽으로도 치우치지 않는다. 처음 하는 사람에게 무난하고, 어떤 길로 가든 막히는 곳이 없다.",
+    bonusText: "초기자금 1,500만 원 / 모든 능력치 밸런스",
+    initCash: 15000000,
+    stats: { int: 10, charm: 10, sta: 10, net: 5, act: 5 },
+    hairM: "#2b231d", hairF: "#2b231d", clothes: "#3b5978", inner: "#ffffff", bg: "linear-gradient(180deg,#5b7996,#2a394a)"
+  },
+  {
+    id: "VISUAL",
+    name: "외모형",
+    headline: "외모형 — 타고난 매력의 소유자",
+    desc: "어딜 가나 시선을 사로잡는 외모. 사교 모임과 플렉스 아이템 할인 혜택을 받는다.",
+    bonusText: "매력 20 / 플렉스 아이템 구매 시 15% 할인",
+    initCash: 12000000,
+    stats: { int: 8, charm: 20, sta: 10, net: 12, act: 6 },
+    hairM: "#382924", hairF: "#4a2e2b", clothes: "#d8cbb8", inner: "#f5f5f5", bg: "linear-gradient(180deg,#7a6855,#3a3128)"
+  },
+  {
+    id: "BRAIN",
+    name: "두뇌형",
+    headline: "두뇌형 — 냉철한 분석가",
+    desc: "차트와 재무제표를 꿰뚫어 보는 명석한 두뇌. 승진 비용이 저렴하고 배당금이 더 들어온다.",
+    bonusText: "지능 20 / 이직·승진 비용 25% 절감 & 배당 +20%",
+    initCash: 15000000,
+    stats: { int: 20, charm: 8, sta: 8, net: 8, act: 8 },
+    hairM: "#1c1c1c", hairF: "#1c1c1c", clothes: "#1f2937", inner: "#60a5fa", bg: "linear-gradient(180deg,#475569,#1e293b)", glasses: true
+  },
+  {
+    id: "STAMINA",
+    name: "체력형",
+    headline: "체력형 — 지치지 않는 열정",
+    desc: "밤샘 근무와 아르바이트도 거뜬한 강철 체력. 매달 기본 월급이 30% 더 들어온다.",
+    bonusText: "체력 20 / 매월 기본 월급 +30% 추가 수령",
+    initCash: 12000000,
+    stats: { int: 8, charm: 10, sta: 20, net: 6, act: 14 },
+    hairM: "#6b4c35", hairF: "#6b4c35", clothes: "#526358", inner: "#9ca3af", bg: "linear-gradient(180deg,#5f7567,#29362e)"
+  },
+  {
+    id: "GENIUS",
+    name: "천재형",
+    headline: "천재형 — 시대를 앞서가는 직관",
+    desc: "남들이 보지 못하는 폭등 시그널을 읽는 천재. 비상장 벤처투자 수익이 대폭 증가한다.",
+    bonusText: "지능 25 / 비상장 벤처 보상 +30% 추가 획득",
+    initCash: 15000000,
+    stats: { int: 25, charm: 12, sta: 6, net: 5, act: 10 },
+    hairM: "#9ca3af", hairF: "#b5bbc4", clothes: "#bfa893", inner: "#1f2937", bg: "linear-gradient(180deg,#648296,#2c3b47)"
+  },
+  {
+    id: "INSIDER",
+    name: "마당발",
+    headline: "마당발 — 정재계 고급 정보통",
+    desc: "모르는 사람이 없는 인맥의 달인. 부동산 월세 수익이 크게 상승한다.",
+    bonusText: "인맥 22 / 부동산 월세 수익 +25% 상승",
+    initCash: 15000000,
+    stats: { int: 10, charm: 14, sta: 10, net: 22, act: 10 },
+    hairM: "#7c6858", hairF: "#7c6858", clothes: "#27272a", inner: "#f4f4f5", bg: "linear-gradient(180deg,#6b7280,#27272a)"
+  },
+  {
+    id: "GOLD",
+    name: "금수저",
+    headline: "금수저 — 압도적인 초기 자본",
+    desc: "태어날 때부터 든든한 집안 배경을 가진 금수저. 1억 원의 거대한 시드머니로 시작한다.",
+    bonusText: "초기자금 1억 원으로 시작!",
+    initCash: 100000000,
+    stats: { int: 12, charm: 16, sta: 8, net: 18, act: 6 },
+    hairM: "#18181b", hairF: "#271c19", clothes: "#a39178", inner: "#e5e5e5", bg: "linear-gradient(180deg,#857250,#382f1e)"
+  }
+];
+
+let selectedGender = 'M';
+let selectedCharId = 'BASIC';
+
+/* ==================== 2. 아바타 SVG & 레이더 ==================== */
+function getAvatarSVG(preset, gender) {
+  const hairColor = gender === 'M' ? preset.hairM : preset.hairF;
+  const glassesSVG = preset.glasses
+    ? `<rect x="33" y="38" width="12" height="7" rx="2" fill="none" stroke="#111" stroke-width="1.8"/>
+       <rect x="55" y="38" width="12" height="7" rx="2" fill="none" stroke="#111" stroke-width="1.8"/>
+       <line x1="45" y1="41" x2="55" y2="41" stroke="#111" stroke-width="1.8"/>`
+    : '';
+  const femaleHairLong = gender === 'F'
+    ? `<path d="M26 35 Q20 65 25 85 L35 85 L32 45 Z" fill="${hairColor}"/>
+       <path d="M74 35 Q80 65 75 85 L65 85 L68 45 Z" fill="${hairColor}"/>`
+    : '';
+
+  return `
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    ${femaleHairLong}
+    <path d="M16 100 Q20 70 50 70 Q80 70 84 100 Z" fill="${preset.clothes}"/>
+    <polygon points="40,70 60,70 55,100 45,100" fill="${preset.inner}"/>
+    <rect x="43" y="56" width="14" height="16" rx="4" fill="#f3cfb6"/>
+    <ellipse cx="50" cy="42" rx="19" ry="22" fill="#fce0cb"/>
+    <circle cx="40" cy="42" r="2.2" fill="#222"/>
+    <circle cx="60" cy="42" r="2.2" fill="#222"/>
+    <path d="M45 53 Q50 56 55 53" stroke="#b87b64" stroke-width="2" fill="none" stroke-linecap="round"/>
+    ${glassesSVG}
+    <path d="M29 38 Q30 15 50 16 Q70 15 71 38 Q65 26 50 28 Q35 26 29 38 Z" fill="${hairColor}"/>
+  </svg>`;
+}
+
+function renderRadarSVG(stats) {
+  const cx = 85, cy = 82, maxR = 48;
+  const maxStat = 25;
+  const keys = [
+    { key: 'int', label: '지능', val: stats.int, angle: -90 },
+    { key: 'charm', label: '매력', val: stats.charm, angle: -18 },
+    { key: 'sta', label: '체력', val: stats.sta, angle: 54 },
+    { key: 'net', label: '인맥', val: stats.net, angle: 126 },
+    { key: 'act', label: '행동력', val: stats.act, angle: 198 }
+  ];
+
+  function pt(angleDeg, r) {
+    const rad = (angleDeg * Math.PI) / 180;
+    return `${(cx + r * Math.cos(rad)).toFixed(1)},${(cy + r * Math.sin(rad)).toFixed(1)}`;
+  }
+
+  let gridPolys = '';
+  [0.33, 0.66, 1.0].forEach(level => {
+    const pts = keys.map(k => pt(k.angle, maxR * level)).join(' ');
+    gridPolys += `<polygon points="${pts}" fill="none" stroke="#2b3240" stroke-width="1"/>`;
+  });
+
+  let axes = '';
+  let labels = '';
+  keys.forEach(k => {
+    const end = pt(k.angle, maxR);
+    axes += `<line x1="${cx}" y1="${cy}" x2="${end.split(',')[0]}" y2="${end.split(',')[1]}" stroke="#2b3240" stroke-width="1"/>`;
+    const lblPt = pt(k.angle, maxR + 18).split(',');
+    labels += `<text x="${lblPt[0]}" y="${lblPt[1]}" fill="#c9d1d9" font-size="9.5" font-weight="700" text-anchor="middle" dominant-baseline="middle">${k.label} ${k.val}</text>`;
+  });
+
+  const valPts = keys.map(k => pt(k.angle, Math.min(maxR, (k.val / maxStat) * maxR))).join(' ');
+  const dots = keys.map(k => {
+    const p = pt(k.angle, Math.min(maxR, (k.val / maxStat) * maxR)).split(',');
+    return `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#f2b938"/>`;
+  }).join('');
+
+  return `
+  <svg width="170" height="160" viewBox="0 0 170 160">
+    ${gridPolys}
+    ${axes}
+    <polygon points="${valPts}" fill="rgba(242, 185, 56, 0.28)" stroke="#f2b938" stroke-width="2"/>
+    ${dots}
+    ${labels}
+  </svg>`;
+}
+
+function renderCharacterCreator() {
+  const grid = document.getElementById('charGrid');
+  let html = '';
+  characterPresets.forEach(c => {
+    const active = c.id === selectedCharId ? 'active' : '';
+    html += `
+      <div class="char-card ${active}" onclick="selectCharacter('${c.id}')">
+        <div class="char-portrait" style="background:${c.bg};">
+          ${getAvatarSVG(c, selectedGender)}
+        </div>
+        <div class="char-name-bar">${c.name}</div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+
+  const cur = characterPresets.find(x => x.id === selectedCharId);
+  document.getElementById('radarContainer').innerHTML = renderRadarSVG(cur.stats);
+  document.getElementById('traitTitle').innerText = cur.headline;
+  document.getElementById('traitDesc').innerText = cur.desc;
+  document.getElementById('traitBonus').innerText = "✨ 특전: " + cur.bonusText;
+}
+
+function selectGender(g) {
+  selectedGender = g;
+  document.getElementById('genderMaleBtn').classList.toggle('active', g === 'M');
+  document.getElementById('genderFemaleBtn').classList.toggle('active', g === 'F');
+  renderCharacterCreator();
+}
+
+function selectCharacter(id) {
+  selectedCharId = id;
+  renderCharacterCreator();
+}
+
+/* ==================== 3. 게임 상태 및 데이터 ==================== */
+const defaultStockPrices = {
+  SAMSUNG: 30000,
+  APPLE: 8000,
+  NVDA: 5000,
+  JEPI_TYPE: 40000,
+  DOTCOM: 2000,
+  BTC: 1000
+};
+
+let state = {
+  player: {
+    name: "주인공",
+    gender: "M",
+    charId: "BASIC",
+    stats: { int: 10, charm: 10, sta: 10, net: 5, act: 5 }
+  },
+  year: 1998,
+  month: 1,
+  cash: 15000000,
+  debt: 0, // 💡 v3 신규: 대출 잔액
+  jobLevel: 0,
+  stocks: {},
+  positions: [],
+  realEstates: [],
+  ventures: [],
+  flexItems: [],
+  marketPrices: { ...defaultStockPrices },
+  nasdaqPrice: 1200,
+  priceHistory: { // 💡 v3 신규: 종목별 최근 12개월 가격 기록
+    SAMSUNG: [30000],
+    APPLE: [8000],
+    NVDA: [5000],
+    JEPI_TYPE: [40000],
+    DOTCOM: [2000],
+    BTC: [1000]
+  }
+};
+
+const jobs = [
+  { name: "알바생", salary: 800000, cost: 0 },
+  { name: "중소기업 사원", salary: 1800000, cost: 5000000 },
+  { name: "대기업 대리", salary: 3500000, cost: 20000000 },
+  { name: "외국계 펀드매니저", salary: 12000000, cost: 100000000 },
+  { name: "월가 헤지펀드 대표", salary: 50000000, cost: 1000000000 }
+];
+
+const stockData = [
+  { id: "SAMSUNG", name: "삼송전자", desc: "대한민국 반도체 대장주", price: 30000, divYield: 0.002, beta: 0.06 },
+  { id: "APPLE", name: "사과(Apple)", desc: "1998년 스티브 잡스 복귀 시점", price: 8000, divYield: 0.001, beta: 0.08 },
+  { id: "NVDA", name: "엔비디앙", desc: "그래픽카드에서 미래 AI 칩으로", price: 5000, divYield: 0.0005, beta: 0.12 },
+  { id: "JEPI_TYPE", name: "고배당 커버드콜 ETF", desc: "매달 따박따박 높은 배당금 지급", price: 40000, divYield: 0.009, beta: 0.02 },
+  { id: "DOTCOM", name: "새롬닷컴(작전주)", desc: "1999 닷컴 광풍의 주역 (초고위험)", price: 2000, divYield: 0, beta: 0.35 },
+  { id: "BTC", name: "비트코인(디지털금)", desc: "2010년 이후 개화하는 가상자산", price: 1000, divYield: 0, beta: 0.25, unlockYear: 2010 }
+];
+
+const futuresAssets = {
+  SAMSUNG: { name: "삼송전자 선물", getPrice: () => getStock('SAMSUNG').price },
+  NASDAQ: { name: "미국 나스닥 지수선물", getPrice: () => state.nasdaqPrice },
+  BTC: { name: "비트코인 선물", getPrice: () => getStock('BTC').price }
+};
+
+const realEstateData = [
+  { id: "APT_GANGNAM", name: "은마아파트 31평", price: 150000000, rent: 750000, desc: "강남 불패 재건축의 상징" },
+  { id: "PENTHOUSE", name: "청담동 펜트하우스", price: 3000000000, rent: 16000000, desc: "한강 조망 최고급 럭셔리 하우스" }
+];
+
+const ventureData = [
+  { id: "SPACEX_TYPE", name: "스페이스 우주로켓 스타트업", cost: 50000000, successYear: 2018, multi: 50, desc: "재사용 로켓 및 위성 인터넷망 구축" },
+  { id: "OPENAI_TYPE", name: "AGI 생성형 AI 연구소", cost: 100000000, successYear: 2022, multi: 100, desc: "초거대 인공지능 언어모델 개발" }
+];
+
+const flexData = [
+  { id: "MOUSE_SETUP", name: "초경량 무선 마우스 & 데스크셋업", cost: 1500000, desc: "쾌적한 장비로 매매 집중력 상승" },
+  { id: "SUPERCAR", name: "이탈리아 슈퍼카", cost: 350000000, desc: "하차감 및 매력 스탯 상승" },
+  { id: "PRIVATE_JET", name: "초호화 전용기", cost: 30000000000, desc: "글로벌 억만장자 사교 클럽 프리패스" }
+];
+
+const historicalEvents = {
+  "1998-1": "IMF 구제금융 한파로 모든 자산이 폭락 중입니다. 저점 매수할 시드머니를 모으세요!",
+  "1999-5": "닷컴 버블 개막! IT/인터넷 테마주가 미친 듯이 폭등하기 시작합니다.",
+  "2000-8": "닷컴 버블 붕괴 조짐! 거품이 꺼지며 작전주들이 -90% 폭락합니다.",
+  "2002-6": "한일 월드컵 4강 신화! 대한민국 소비 심리가 뜨겁게 달아오릅니다.",
+  "2008-9": "리먼 브라더스 파산 신청! 글로벌 금융위기 발생. 선물 숏(Short)으로 떼돈을 벌 기회!",
+  "2010-1": "스마트폰 대중화 & 비트코인의 태동기! 빅테크 종목들이 본격적으로 날아오릅니다.",
+  "2017-11": "가상화폐 1차 대광풍! 코인 가격이 비이성적으로 폭등합니다.",
+  "2020-3": "코로나19 팬데믹 쇼크 발생! 전 세계 증시 급락 후 유동성 상승장이 예고됩니다.",
+  "2023-1": "생성형 AI 및 반도체 대폭발! 엔비디앙과 AI 테마의 독주가 시작됩니다."
+};
+
+let selectedStockId = 'SAMSUNG';
+
+/* ==================== 4. 게임 시작 & 저장/로드 ==================== */
+const AUTO_SAVE_KEY = "SOLO_LIMIT_UP_AUTOSAVE_V3";
+const SLOT_PREFIX = "SOLO_LIMIT_UP_SLOT_V3_";
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 1800);
+}
+
+function syncPricesToState() {
+  state.marketPrices = {};
+  stockData.forEach(s => { state.marketPrices[s.id] = s.price; });
+}
+
+function applyPricesFromState() {
+  if (!state.marketPrices) return;
+  stockData.forEach(s => {
+    if (state.marketPrices[s.id]) s.price = state.marketPrices[s.id];
+  });
+}
+
+function startNewGame() {
+  const nameVal = document.getElementById('playerNameInput').value.trim() || "성진우";
+  const preset = characterPresets.find(x => x.id === selectedCharId);
+
+  let initialHistory = {};
+  stockData.forEach(s => {
+    s.price = defaultStockPrices[s.id];
+    s.lastChange = 0;
+    initialHistory[s.id] = [s.price];
+  });
+
+  state = {
+    player: {
+      name: nameVal,
+      gender: selectedGender,
+      charId: preset.id,
+      stats: { ...preset.stats }
+    },
+    year: 1998,
+    month: 1,
+    cash: preset.initCash,
+    debt: 0,
+    jobLevel: 0,
+    stocks: {},
+    positions: [],
+    realEstates: [],
+    ventures: [],
+    flexItems: [],
+    marketPrices: { ...defaultStockPrices },
+    nasdaqPrice: 1200,
+    priceHistory: initialHistory
+  };
+
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  enterGameScreen();
+}
+
+function enterGameScreen() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  selectStock('SAMSUNG');
+  renderAll();
+  renderSaveSlots();
+}
+
+function goToTitleScreen() {
+  checkExistingAutoSave();
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'flex';
+}
+
+function saveGameToStorage(key, notify = true) {
+  syncPricesToState();
+  const payload = {
+    savedAt: new Date().toLocaleString('ko-KR'),
+    state: state
+  };
+  localStorage.setItem(key, JSON.stringify(payload));
+  if (notify) showToast("💾 게임이 저장되었습니다!");
+  renderSaveSlots();
+}
+
+function loadGameFromStorage(key) {
+  const raw = localStorage.getItem(key);
+  if (!raw) {
+    alert("저장된 데이터가 없습니다.");
+    return false;
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    state = parsed.state;
+    if (!state.priceHistory) {
+      state.priceHistory = {};
+      stockData.forEach(s => { state.priceHistory[s.id] = [s.price]; });
+    }
+    applyPricesFromState();
+    enterGameScreen();
+    showToast("📂 데이터를 불러왔습니다!");
+    return true;
+  } catch (e) {
+    alert("세이브 파일이 손상되었습니다.");
+    return false;
+  }
+}
+
+function manualQuickSave() {
+  saveGameToStorage(AUTO_SAVE_KEY, true);
+}
+
+function checkExistingAutoSave() {
+  const raw = localStorage.getItem(AUTO_SAVE_KEY);
+  const box = document.getElementById('continue-box');
+  if (!raw) {
+    box.style.display = 'none';
+    return;
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    const st = parsed.state;
+    const preset = characterPresets.find(x => x.id === st.player.charId) || characterPresets[0];
+    document.getElementById('continueSummary').innerText =
+      `${st.player.name} (${preset.name}) | ${st.year}년 ${st.month}월 | 순자산 ${fmt(calculateNetWorth(st))}`;
+    box.style.display = 'flex';
+  } catch (e) {
+    box.style.display = 'none';
+  }
+}
+
+function loadAutoSaveAndStart() {
+  loadGameFromStorage(AUTO_SAVE_KEY);
+}
+
+function calculateNetWorth(st) {
+  let stockValue = 0;
+  for (let id in st.stocks) {
+    const hold = st.stocks[id];
+    const s = stockData.find(x => x.id === id);
+    if (hold && hold.qty > 0 && s) stockValue += hold.qty * s.price;
+  }
+  let futuresVal = 0;
+  (st.positions || []).forEach(pos => {
+    const curP = pos.symbol === 'NASDAQ' ? st.nasdaqPrice : (stockData.find(x => x.id === pos.symbol)?.price || pos.entryPrice);
+    const ratio = (curP - pos.entryPrice) / pos.entryPrice;
+    let ret = (pos.type === 'LONG') ? (ratio * pos.leverage) : (-ratio * pos.leverage);
+    futuresVal += Math.max(0, pos.margin * (1 + ret));
+  });
+  let reVal = 0;
+  (st.realEstates || []).forEach(rId => {
+    const r = realEstateData.find(x => x.id === rId);
+    if (r) reVal += r.price;
+  });
+  return st.cash + stockValue + futuresVal + reVal - (st.debt || 0);
+}
+
+function renderSaveSlots() {
+  const container = document.getElementById('saveSlotsContainer');
+  if (!container) return;
+  let html = '';
+  for (let i = 1; i <= 3; i++) {
+    const key = SLOT_PREFIX + i;
+    const raw = localStorage.getItem(key);
+    let infoText = "비어 있는 슬롯";
+    if (raw) {
+      try {
+        const p = JSON.parse(raw);
+        const nw = calculateNetWorth(p.state);
+        infoText = `${p.state.player.name} (${p.state.year}.${p.state.month}) | 순자산 ${fmt(nw)}<br><span style="font-size:10px; color:#8b949e;">저장시각: ${p.savedAt}</span>`;
+      } catch (e) {}
+    }
+    html += `
+      <div class="slot-box">
+        <div>
+          <div style="font-weight:700; font-size:13px; color:var(--accent);">슬롯 ${i}</div>
+          <div style="font-size:12px; margin-top:2px;">${infoText}</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-dark btn-sm" onclick="saveGameToStorage('${key}', true)">저장</button>
+          <button class="btn btn-blue btn-sm" onclick="loadGameFromStorage('${key}')">불러오기</button>
+        </div>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
+}
+
+function exportSaveFile() {
+  syncPricesToState();
+  const dataStr = JSON.stringify({ savedAt: new Date().toLocaleString('ko-KR'), state: state }, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `나혼자만상한가v3_${state.player.name}_${state.year}년.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("📥 세이브 파일 다운로드 완료!");
+}
+
+function copySaveCode() {
+  syncPricesToState();
+  const code = btoa(encodeURIComponent(JSON.stringify({ savedAt: new Date().toLocaleString('ko-KR'), state: state })));
+  navigator.clipboard?.writeText(code);
+  document.getElementById('importCodeArea').value = code;
+  showToast("📋 세이브 코드가 복사되었습니다!");
+}
+
+function importSaveCode() {
+  const code = document.getElementById('importCodeArea').value.trim();
+  if (!code) {
+    alert("세이브 코드를 붙여넣어 주세요.");
+    return;
+  }
+  try {
+    const jsonStr = decodeURIComponent(atob(code));
+    const parsed = JSON.parse(jsonStr);
+    state = parsed.state;
+    if (!state.priceHistory) {
+      state.priceHistory = {};
+      stockData.forEach(s => { state.priceHistory[s.id] = [s.price]; });
+    }
+    applyPricesFromState();
+    saveGameToStorage(AUTO_SAVE_KEY, false);
+    renderAll();
+    showToast("🔄 세이브 코드로 복원 성공!");
+  } catch (e) {
+    alert("유효하지 않은 세이브 코드입니다.");
+  }
+}
+
+function importSaveFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      state = parsed.state || parsed;
+      if (!state.priceHistory) {
+        state.priceHistory = {};
+        stockData.forEach(s => { state.priceHistory[s.id] = [s.price]; });
+      }
+      applyPricesFromState();
+      saveGameToStorage(AUTO_SAVE_KEY, false);
+      renderAll();
+      showToast("📂 파일에서 불러오기 완료!");
+    } catch (err) {
+      alert("올바른 세이브 파일(.json)이 아닙니다.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ==================== 5. 유틸리티 & 차트 렌더링 ==================== */
+function fmt(num) {
+  num = Math.floor(num);
+  if (Math.abs(num) >= 1000000000000) {
+    return (num / 1000000000000).toFixed(2) + "조 원";
+  } else if (Math.abs(num) >= 100000000) {
+    return (num / 100000000).toFixed(2) + "억 원";
+  } else if (Math.abs(num) >= 10000) {
+    return (num / 10000).toFixed(0) + "만 원";
+  }
+  return num.toLocaleString() + "원";
+}
+
+function getStock(id) {
+  return stockData.find(s => s.id === id);
+}
+
+function getFuturesPrice(id) {
+  const asset = futuresAssets[id];
+  return asset.getPrice();
+}
+
+// 💡 v3 신규: SVG 미니 차트 생성 함수
+function renderMiniChart(stockId) {
+  const s = getStock(stockId);
+  if (!s) return '';
+  if (!state.priceHistory[stockId]) {
+    state.priceHistory[stockId] = [s.price];
+  }
+  const history = state.priceHistory[stockId];
+  const maxP = Math.max(...history);
+  const minP = Math.min(...history);
+  const range = maxP - minP || 1;
+
+  const w = 320, h = 90;
+  const pts = history.map((p, idx) => {
+    const x = (idx / Math.max(1, history.length - 1)) * (w - 30) + 15;
+    const y = h - 15 - ((p - minP) / range) * (h - 30);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  let circles = history.map((p, idx) => {
+    const x = (idx / Math.max(1, history.length - 1)) * (w - 30) + 15;
+    const y = h - 15 - ((p - minP) / range) * (h - 30);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="#f2b938"/>`;
+  }).join('');
+
+  return `
+  <div style="font-size:12px; font-weight:700; color:#c9d1d9; margin-bottom:4px;">📊 ${s.name} 최근 추이 (최대 12개월)</div>
+  <svg viewBox="0 0 ${w} ${h}" width="100%" height="90" style="background:#0d1017; border-radius:6px;">
+    <polyline points="${pts}" fill="none" stroke="#5b8def" stroke-width="2.5" stroke-linejoin="round"/>
+    ${circles}
+    <text x="15" y="14" fill="#8b949e" font-size="9">최고: ${fmt(maxP)}</text>
+    <text x="15" y="${h-4}" fill="#8b949e" font-size="9">최저: ${fmt(minP)}</text>
+  </svg>`;
+}
+
+/* ==================== 6. 턴 진행 및 대출 이자 시스템 ==================== */
+function nextTurn() {
+  state.month++;
+  if (state.month > 12) {
+    state.month = 1;
+    state.year++;
+  }
+
+  stockData.forEach(s => {
+    if (s.unlockYear && state.year < s.unlockYear) return;
+    let trend = 0.01;
+    if (state.year === 1999 && s.id === 'DOTCOM') trend = 0.45;
+    if (state.year === 2000 && s.id === 'DOTCOM') trend = -0.35;
+    if (state.year === 2008) trend = -0.08;
+    if (state.year === 2020 && state.month <= 3) trend = -0.15;
+    if (state.year >= 2023 && s.id === 'NVDA') trend = 0.15;
+
+    const noise = (Math.random() - 0.48) * (s.beta * 2);
+    let changePct = trend + noise;
+    s.price = Math.max(10, Math.floor(s.price * (1 + changePct)));
+    s.lastChange = changePct;
+
+    // 가격 기록 관리 (최대 12개월 유지)
+    if (!state.priceHistory[s.id]) state.priceHistory[s.id] = [];
+    state.priceHistory[s.id].push(s.price);
+    if (state.priceHistory[s.id].length > 12) {
+      state.priceHistory[s.id].shift();
+    }
+  });
+
+  state.nasdaqPrice = Math.max(100, Math.floor(state.nasdaqPrice * (1 + (Math.random() - 0.48) * 0.1)));
+
+  // 캐릭터 특성 보너스
+  const charId = state.player.charId;
+  let salaryBonus = (charId === 'STAMINA') ? 1.3 : 1.0;
+  let divBonus = (charId === 'BRAIN') ? 1.2 : 1.0;
+  let rentBonus = (charId === 'INSIDER') ? 1.25 : 1.0;
+  let ventureBonus = (charId === 'GENIUS') ? 1.3 : 1.0;
+
+  let income = Math.floor(jobs[state.jobLevel].salary * salaryBonus);
+
+  let dividendSum = 0;
+  for (let sId in state.stocks) {
+    const hold = state.stocks[sId];
+    const s = getStock(sId);
+    if (hold && hold.qty > 0 && s.divYield > 0) {
+      dividendSum += Math.floor(hold.qty * s.price * s.divYield * divBonus);
+    }
+  }
+
+  let rentSum = 0;
+  state.realEstates.forEach(rId => {
+    const r = realEstateData.find(x => x.id === rId);
+    if (r) rentSum += Math.floor(r.rent * rentBonus);
+  });
+
+  // 💡 v3 신규: 대출 이자 납부 (월 1.5%)
+  let monthlyInterest = 0;
+  if (state.debt > 0) {
+    monthlyInterest = Math.floor(state.debt * 0.015);
+    state.cash -= monthlyInterest;
+  }
+
+  state.cash += (income + dividendSum + rentSum);
+  checkFuturesLiquidation();
+
+  // 대출 원금 초과 파산 방지 알림
+  if (state.cash < 0 && state.debt > 0) {
+    alert(`🚨 [자금 경고] 현금이 마이너스(-)가 되어 대출 이자 납부가 지연되고 있습니다! 포지션을 정리하거나 대출을 상환하세요.`);
+  }
+
+  state.ventures.forEach((vItem) => {
+    if (!vItem.paid && state.year >= vItem.successYear) {
+      const reward = Math.floor(vItem.cost * vItem.multi * ventureBonus);
+      state.cash += reward;
+      vItem.paid = true;
+      alert(`🎉 [엔젤투자 대박 상장!]
+${vItem.name} 지분이 상장되어 +${fmt(reward)} 회수 완료!`);
+    }
+  });
+
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  renderAll();
+}
+
+/* ==================== 7. 대출 및 선물 시스템 ==================== */
+function getMaxLoanLimit() {
+  const baseLimit = [10000000, 50000000, 200000000, 1000000000, 5000000000];
+  return baseLimit[state.jobLevel] || 10000000;
+}
+
+function takeLoan() {
+  const amt = parseFloat(document.getElementById('loanAmountInput').value);
+  if (!amt || amt <= 0) {
+    alert("금액을 올바르게 입력하세요.");
+    return;
+  }
+  const limit = getMaxLoanLimit();
+  if (state.debt + amt > limit) {
+    alert(`현재 직급에서의 최대 대출 한도는 ${fmt(limit)}입니다. 더 높은 직급으로 승진하세요!`);
+    return;
+  }
+  state.debt += amt;
+  state.cash += amt;
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`🏦 대출 ${fmt(amt)} 실행 완료`);
+  renderAll();
+}
+
+function repayLoan() {
+  const amt = parseFloat(document.getElementById('loanAmountInput').value);
+  if (!amt || amt <= 0) {
+    alert("금액을 올바르게 입력하세요.");
+    return;
+  }
+  if (amt > state.cash) {
+    alert("상환할 현금이 부족합니다!");
+    return;
+  }
+  if (amt > state.debt) {
+    state.cash -= state.debt;
+    state.debt = 0;
+  } else {
+    state.cash -= amt;
+    state.debt -= amt;
+  }
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`💸 대출 ${fmt(amt)} 상환 완료`);
+  renderAll();
+}
+
+function openFuturesPosition(type) {
+  const symbol = document.getElementById('futuresAssetSelect').value;
+  const leverage = parseFloat(document.getElementById('futuresLeverage').value);
+  const margin = parseFloat(document.getElementById('futuresMargin').value);
+
+  if (!leverage || leverage < 1) {
+    alert("레버리지 배율은 최소 1배 이상이어야 합니다.");
+    return;
+  }
+  if (!margin || margin <= 0) {
+    alert("투입할 증거금을 입력하세요.");
+    return;
+  }
+  if (margin > state.cash) {
+    alert("현금이 부족합니다!");
+    return;
+  }
+
+  state.cash -= margin;
+  const currentPrice = getFuturesPrice(symbol);
+
+  state.positions.push({
+    id: Date.now(),
+    symbol: symbol,
+    type: type,
+    leverage: leverage,
+    margin: margin,
+    entryPrice: currentPrice
+  });
+
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`⚡ ${symbol} ${type} ${leverage}배 진입!`);
+  document.getElementById('futuresMargin').value = '';
+  renderAll();
+}
+
+function checkFuturesLiquidation() {
+  const survivedPositions = [];
+  state.positions.forEach(pos => {
+    const curPrice = getFuturesPrice(pos.symbol);
+    const priceChangeRatio = (curPrice - pos.entryPrice) / pos.entryPrice;
+    let returnRatio = (pos.type === 'LONG') ? (priceChangeRatio * pos.leverage) : (-priceChangeRatio * pos.leverage);
+
+    if (returnRatio <= -1.0) {
+      alert(`🚨 [강제 청산 / MARGIN CALL!]
+${pos.symbol} ${pos.type} ${pos.leverage}배 포지션이 청산되었습니다!
+증거금 ${fmt(pos.margin)} 소멸.`);
+    } else {
+      survivedPositions.push(pos);
+    }
+  });
+  state.positions = survivedPositions;
+}
+
+function closeFuturesPosition(posId) {
+  const idx = state.positions.findIndex(p => p.id === posId);
+  if (idx === -1) return;
+
+  const pos = state.positions[idx];
+  const curPrice = getFuturesPrice(pos.symbol);
+  const priceChangeRatio = (curPrice - pos.entryPrice) / pos.entryPrice;
+  let returnRatio = (pos.type === 'LONG') ? (priceChangeRatio * pos.leverage) : (-priceChangeRatio * pos.leverage);
+
+  const finalAmount = Math.max(0, Math.floor(pos.margin * (1 + returnRatio)));
+  const pnl = finalAmount - pos.margin;
+
+  state.cash += finalAmount;
+  state.positions.splice(idx, 1);
+
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  alert(`포지션 정산 완료!
+실현 손익: ${pnl >= 0 ? '+' : ''}${fmt(pnl)}
+회수 금액: ${fmt(finalAmount)}`);
+  renderAll();
+}
+
+/* ==================== 8. 현물/부동산/스펙업 ==================== */
+function selectStock(id) {
+  selectedStockId = id;
+  const s = getStock(id);
+  const myHold = state.stocks[id] ? state.stocks[id].qty : 0;
+  document.getElementById('selectedStockInfo').innerHTML = 
+    `선택: <b>${s.name}</b> (현재가: ${fmt(s.price)}) | 내 보유: <b>${myHold}주</b>`;
+  document.getElementById('miniChartContainer').innerHTML = renderMiniChart(id);
+}
+
+function setStockBuyRatio(ratio) {
+  const s = getStock(selectedStockId);
+  if (!s) return;
+  const maxBuyQty = Math.floor((state.cash * ratio) / s.price);
+  document.getElementById('stockTradeAmount').value = maxBuyQty > 0 ? maxBuyQty : 0;
+}
+
+function executeStockTrade(isBuy) {
+  const qty = parseInt(document.getElementById('stockTradeAmount').value);
+  const s = getStock(selectedStockId);
+
+  if (!qty || qty <= 0) {
+    alert("수량을 올바르게 입력하세요.");
+    return;
+  }
+
+  const cost = qty * s.price;
+
+  if (isBuy) {
+    if (cost > state.cash) {
+      alert("현금이 부족합니다!");
+      return;
+    }
+    state.cash -= cost;
+    if (!state.stocks[s.id]) state.stocks[s.id] = { qty: 0, avgPrice: 0 };
+    const cur = state.stocks[s.id];
+    cur.avgPrice = Math.floor(((cur.qty * cur.avgPrice) + cost) / (cur.qty + qty));
+    cur.qty += qty;
+  } else {
+    if (!state.stocks[s.id] || state.stocks[s.id].qty < qty) {
+      alert("보유 수량이 부족합니다!");
+      return;
+    }
+    state.stocks[s.id].qty -= qty;
+    state.cash += cost;
+  }
+
+  document.getElementById('stockTradeAmount').value = '';
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  selectStock(selectedStockId);
+  renderAll();
+}
+
+function buyRealEstate(id) {
+  const r = realEstateData.find(x => x.id === id);
+  if (state.cash < r.price) {
+    alert("현금이 부족합니다!");
+    return;
+  }
+  state.cash -= r.price;
+  state.realEstates.push(r.id);
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`🏢 ${r.name} 매입 완료!`);
+  renderAll();
+}
+
+function investVenture(id) {
+  const v = ventureData.find(x => x.id === id);
+  if (state.cash < v.cost) {
+    alert("투자금이 부족합니다!");
+    return;
+  }
+  state.cash -= v.cost;
+  state.ventures.push({ ...v, paid: false });
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`🚀 ${v.name} 엔젤투자 완료!`);
+  renderAll();
+}
+
+function upgradeJob() {
+  const next = jobs[state.jobLevel + 1];
+  if (!next) return;
+  const discount = (state.player.charId === 'BRAIN') ? 0.75 : 1.0;
+  const finalCost = Math.floor(next.cost * discount);
+
+  if (state.cash < finalCost) {
+    alert("스펙업/이직 준비 비용이 부족합니다!");
+    return;
+  }
+  state.cash -= finalCost;
+  state.jobLevel++;
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`👑 [${next.name}] 승진 완료!`);
+  renderAll();
+}
+
+function buyFlex(id) {
+  const item = flexData.find(x => x.id === id);
+  const discount = (state.player.charId === 'VISUAL') ? 0.85 : 1.0;
+  const finalCost = Math.floor(item.cost * discount);
+
+  if (state.cash < finalCost) {
+    alert("현금이 부족합니다!");
+    return;
+  }
+  state.cash -= finalCost;
+  state.flexItems.push(item.id);
+  state.player.stats.charm += 5;
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`✨ ${item.name} 장착 완료!`);
+  renderAll();
+}
+
+/* ==================== 9. UI 렌더링 ==================== */
+function renderAll() {
+  const preset = characterPresets.find(x => x.id === state.player.charId) || characterPresets[0];
+  document.getElementById('hudAvatar').innerHTML = getAvatarSVG(preset, state.player.gender);
+  document.getElementById('hudPlayerName').innerText = `${state.player.name} (${preset.name})`;
+  document.getElementById('hudDate').innerText = `${state.year}년 ${state.month}월`;
+  document.getElementById('hudJob').innerText = `${jobs[state.jobLevel].name}`;
+
+  const st = state.player.stats;
+  document.getElementById('summaryStats').innerText =
+    `[능력치] 지능 ${st.int} | 매력 ${st.charm} | 체력 ${st.sta} | 인맥 ${st.net} | 행동력 ${st.act}`;
+
+  let stockValue = 0;
+  for (let id in state.stocks) {
+    const s = getStock(id);
+    const hold = state.stocks[id];
+    if (hold && hold.qty > 0) stockValue += hold.qty * s.price;
+  }
+
+  let futuresMarginSum = 0;
+  let futuresCurrentValSum = 0;
+  state.positions.forEach(pos => {
+    futuresMarginSum += pos.margin;
+    const curPrice = getFuturesPrice(pos.symbol);
+    const ratio = (curPrice - pos.entryPrice) / pos.entryPrice;
+    let ret = (pos.type === 'LONG') ? (ratio * pos.leverage) : (-ratio * pos.leverage);
+    let curVal = Math.max(0, pos.margin * (1 + ret));
+    futuresCurrentValSum += curVal;
+  });
+
+  let realEstateValue = 0;
+  state.realEstates.forEach(rId => {
+    const r = realEstateData.find(x => x.id === rId);
+    if (r) realEstateValue += r.price;
+  });
+
+  const netWorth = state.cash + stockValue + futuresCurrentValSum + realEstateValue - state.debt;
+
+  document.getElementById('hudNetWorth').innerText = `순자산: ${fmt(netWorth)}`;
+  document.getElementById('hudCash').innerText = fmt(state.cash);
+  document.getElementById('hudDebt').innerText = fmt(state.debt);
+
+  document.getElementById('summaryStock').innerText = fmt(stockValue);
+  document.getElementById('summaryFutures').innerText = fmt(futuresCurrentValSum);
+  const pnl = futuresCurrentValSum - futuresMarginSum;
+  document.getElementById('summaryPnl').innerHTML = `<span class="${pnl >= 0 ? 'up' : 'down'}">${pnl >= 0 ? '+' : ''}${fmt(pnl)}</span>`;
+  document.getElementById('summaryRealEstate').innerText = fmt(realEstateValue);
+
+  // 대출 탭 상태 갱신
+  document.getElementById('loanStatusText').innerText = fmt(state.debt);
+  document.getElementById('loanInterestText').innerText = fmt(Math.floor(state.debt * 0.015)) + " /월";
+
+  let salaryBonus = (state.player.charId === 'STAMINA') ? 1.3 : 1.0;
+  let monthlyTotal = Math.floor(jobs[state.jobLevel].salary * salaryBonus);
+  state.realEstates.forEach(rId => {
+    const r = realEstateData.find(x => x.id === rId);
+    if (r) monthlyTotal += r.rent;
+  });
+  document.getElementById('summaryIncome').innerText = fmt(monthlyTotal) + " + 배당금 (대출이자 차감 후)";
+
+  if (state.flexItems.length > 0) {
+    const names = state.flexItems.map(id => flexData.find(f => f.id === id)?.name).join(', ');
+    document.getElementById('summaryGear').innerHTML = `<span style="color:var(--accent); font-weight:700;">${names}</span> 장착 중`;
+  } else {
+    document.getElementById('summaryGear').innerText = "보유 중인 플렉스 아이템이 없습니다.";
+  }
+
+  const newsKey = `${state.year}-${state.month}`;
+  if (historicalEvents[newsKey]) {
+    document.getElementById('newsText').innerText = historicalEvents[newsKey];
+  }
+
+  // 주식 리스트
+  let stockHtml = '';
+  stockData.forEach(s => {
+    if (s.unlockYear && state.year < s.unlockYear) return;
+    const hold = state.stocks[s.id] ? state.stocks[s.id].qty : 0;
+    const chg = s.lastChange || 0;
+    const chgClass = chg >= 0 ? 'up' : 'down';
+    const chgSign = chg >= 0 ? '+' : '';
+
+    stockHtml += `
+      <div class="stock-item" onclick="selectStock('${s.id}')" style="cursor:pointer;">
+        <div>
+          <div class="stock-name">${s.name} ${hold > 0 ? `<span style="font-size:11px; color:var(--accent);">(${hold}주)</span>` : ''}</div>
+          <div class="stock-desc">${s.desc}</div>
+        </div>
+        <div class="stock-price">
+          <div>${fmt(s.price)}</div>
+          <div class="${chgClass}" style="font-size:12px;">${chgSign}${(chg * 100).toFixed(1)}%</div>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('stockList').innerHTML = stockHtml;
+
+  // 미니 차트 실시간 갱신
+  if (selectedStockId) {
+    document.getElementById('miniChartContainer').innerHTML = renderMiniChart(selectedStockId);
+  }
+
+  // 선물 포지션 리스트
+  if (state.positions.length === 0) {
+    document.getElementById('positionList').innerHTML = "보유 중인 선물 포지션이 없습니다.";
+  } else {
+    let posHtml = '';
+    state.positions.forEach(pos => {
+      const curPrice = getFuturesPrice(pos.symbol);
+      const ratio = (curPrice - pos.entryPrice) / pos.entryPrice;
+      let ret = (pos.type === 'LONG') ? (ratio * pos.leverage) : (-ratio * pos.leverage);
+      let curVal = Math.max(0, pos.margin * (1 + ret));
+      let pnlVal = curVal - pos.margin;
+
+      posHtml += `
+        <div class="pos-item">
+          <div style="display:flex; justify-content:space-between; font-weight:700;">
+            <span class="${pos.type === 'LONG' ? 'up' : 'down'}">[${pos.type} ${pos.leverage}x] ${pos.symbol}</span>
+            <button class="btn btn-dark btn-sm" onclick="closeFuturesPosition(${pos.id})">청산/종료</button>
+          </div>
+          <div style="margin-top:6px; font-size:12px; color:var(--text-muted);">
+            진입가: ${fmt(pos.entryPrice)} ➔ 현재가: ${fmt(curPrice)}<br>
+            투입 증거금: ${fmt(pos.margin)} | 평가금: <b>${fmt(curVal)}</b><br>
+            수익률: <b class="${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${(ret * 100).toFixed(1)}%</b> (${fmt(pnlVal)})
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('positionList').innerHTML = posHtml;
+  }
+
+  // 부동산/벤처
+  let reHtml = '';
+  realEstateData.forEach(r => {
+    const owned = state.realEstates.includes(r.id);
+    reHtml += `
+      <div class="stock-item">
+        <div>
+          <div class="stock-name">${r.name}</div>
+          <div class="stock-desc">${r.desc} (월세: ${fmt(r.rent)})</div>
+        </div>
+        <div>
+          ${owned ? '<span style="color:var(--green); font-weight:700;">보유 중</span>' : 
+            `<button class="btn btn-dark btn-sm" onclick="buyRealEstate('${r.id}')">${fmt(r.price)} 매입</button>`}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('realEstateList').innerHTML = reHtml;
+
+  let vHtml = '';
+  ventureData.forEach(v => {
+    const invested = state.ventures.some(x => x.id === v.id);
+    vHtml += `
+      <div class="stock-item">
+        <div>
+          <div class="stock-name">${v.name}</div>
+          <div class="stock-desc">${v.desc} (예상 대박: ${v.multi}배)</div>
+        </div>
+        <div>
+          ${invested ? '<span style="color:var(--accent); font-weight:700;">투자 완료(대기)</span>' : 
+            `<button class="btn btn-gold btn-sm" onclick="investVenture('${v.id}')">${fmt(v.cost)} 투자</button>`}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('ventureList').innerHTML = vHtml;
+
+  // 직급 & 플렉스
+  const nextJob = jobs[state.jobLevel + 1];
+  const discountJob = (state.player.charId === 'BRAIN') ? 0.75 : 1.0;
+  let jobHtml = `
+    <div style="font-size:13px; line-height:1.6;">
+      현재 직급: <b>${jobs[state.jobLevel].name}</b> (기본급: ${fmt(jobs[state.jobLevel].salary)})<br>
+      대출 한도: <b style="color:var(--blue);">${fmt(getMaxLoanLimit())}</b><br>
+      ${nextJob ? `다음 단계: <b>${nextJob.name}</b> (필요 비용: ${fmt(nextJob.cost * discountJob)})<br>
+      <button class="btn btn-dark btn-sm" style="margin-top:6px;" onclick="upgradeJob()">승진 시험/이직하기</button>` : '최고 직급에 도달했습니다!'}
+    </div>
+  `;
+  document.getElementById('jobList').innerHTML = jobHtml;
+
+  let flexHtml = '';
+  const discountFlex = (state.player.charId === 'VISUAL') ? 0.85 : 1.0;
+  flexData.forEach(f => {
+    const owned = state.flexItems.includes(f.id);
+    flexHtml += `
+      <div class="stock-item">
+        <div>
+          <div class="stock-name">${f.name}</div>
+          <div class="stock-desc">${f.desc}</div>
+        </div>
+        <div>
+          ${owned ? '<span style="color:var(--accent); font-weight:700;">장착 완료</span>' : 
+            `<button class="btn btn-dark btn-sm" onclick="buyFlex('${f.id}')">${fmt(f.cost * discountFlex)}</button>`}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('flexList').innerHTML = flexHtml;
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const map = { home: 0, stocks: 1, futures: 2, assets: 3, flex: 4, save: 5 };
+  if (btns[map[tabId]]) btns[map[tabId]].classList.add('active');
+  if (tabId === 'save') renderSaveSlots();
+}
+
+function setFuturesMarginRatio(ratio) {
+  document.getElementById('futuresMargin').value = Math.floor(state.cash * ratio);
+}
+
+// 초기 실행
+renderCharacterCreator();
+checkExistingAutoSave();
+</script>
+</body>
+</html>
