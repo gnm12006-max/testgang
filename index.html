@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
   <link rel="manifest" href="manifest.json">
-  <title>나 혼자만 상한가 v6 - 인생회귀 게임</title>
+  <title>나 혼자만 상한가 v7 - 인생회귀 게임</title>
   <style>
     :root {
       --bg: #0b0e14;
@@ -483,6 +483,58 @@
     .ach-item b { display:block; font-size:12px; margin-bottom:2px; }
     #toast { z-index: 9500; }
 
+    /* ===== 라이프 메인 화면 ===== */
+    #game-screen { padding-bottom: 0; }
+    #life-screen { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+    .life-top { display: flex; align-items: center; gap: 4px; padding: 14px 10px 10px; background: #0d1119; border-bottom: 1px solid var(--border); }
+    .life-stat { flex: 1; text-align: center; min-width: 0; }
+    .life-stat .lbl { font-size: 11px; color: var(--text-muted); }
+    .life-stat .val { font-size: 16px; font-weight: 800; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .life-icon { position: relative; flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: #1a2030; font-size: 17px; color: #fff; cursor: pointer; }
+    .life-icon .dot { position: absolute; top: 2px; right: 2px; width: 9px; height: 9px; border-radius: 50%; background: #ff5a5a; display: none; }
+    .life-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px 12px; }
+    .life-chip { background: #141a26; border: 1px solid var(--border); border-radius: 10px; padding: 7px 2px; text-align: center; min-width: 0; }
+    .life-chip .lbl { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+    .life-chip .val { font-size: 14px; font-weight: 800; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .life-hero { position: relative; height: clamp(320px, 40vh, 430px); overflow: hidden; }
+    .life-hero-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; align-items: center; gap: 8px; z-index: 4; }
+    .life-date { font-size: 21px; font-weight: 900; color: var(--accent); text-shadow: 0 2px 10px rgba(0,0,0,0.7); white-space: nowrap; }
+    .life-stage-chip { background: rgba(12,16,26,0.78); border: 1px solid rgba(255,255,255,0.16); color: #f0f6fc; font-size: 11.5px; font-weight: 700; padding: 7px 10px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+    .life-sq { width: 38px; height: 38px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.16); background: rgba(12,16,26,0.78); font-size: 17px; color: #fff; cursor: pointer; }
+    .life-asset-chips { position: absolute; top: 64px; right: 12px; z-index: 4; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .life-asset-chips span { background: rgba(12,16,26,0.78); border: 1px solid rgba(255,255,255,0.14); color: #f0f6fc; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
+    .life-figure { position: absolute; left: 50%; bottom: 58px; width: 270px; height: 300px; transform: translateX(-50%) scale(var(--sc, 1)); transform-origin: 50% 100%; filter: drop-shadow(0 10px 22px rgba(0,0,0,0.65)); z-index: 2; }
+    .life-figure.pop { animation: lifePop 0.4s ease-out; }
+    @keyframes lifePop { from { opacity: 0; transform: translateX(-50%) translateY(16px) scale(var(--sc, 1)); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(var(--sc, 1)); } }
+    .life-caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 44px 14px 12px; background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,0.9) 42%); }
+    .life-caption .hero-headline { font-size: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .intuition { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 8px; background: rgba(60,90,170,0.3); border-left: 3px solid #5b8def; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-style: italic; color: #c9d7f5; line-height: 1.45; }
+    .intuition b { color: #8fb0ff; font-style: normal; }
+    .stat-tiles.life-tiles { grid-template-columns: repeat(6, 1fr); margin: 10px 12px 0; gap: 2px; padding: 8px 4px 6px; }
+    .life-tiles .stat-tile { cursor: pointer; }
+    .life-tiles .num { font-size: 19px; }
+    .life-tiles .lbl { font-size: 9.5px; }
+    .ap-row { display: flex; align-items: center; gap: 8px; padding: 12px 14px 4px; font-size: 13px; font-weight: 700; color: #c9d1d9; }
+    .ap-bar { flex: 1; height: 10px; border-radius: 6px; background: #1c2230; overflow: hidden; }
+    .ap-bar i { display: block; height: 100%; background: linear-gradient(90deg, #c9921f, #f7cf6a); transition: width 0.25s; }
+    .act-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 8px 12px; }
+    .act-btn { background: #161c29; border: 1px solid var(--border); border-radius: 12px; padding: 11px 0 9px; color: #fff; font-size: 11.5px; white-space: nowrap; letter-spacing: -0.4px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+    .act-btn .ai { font-size: 23px; }
+    .act-btn:active { transform: translateY(1px); background: #1d2535; }
+    .act-btn.off { opacity: 0.4; }
+    .life-bottom { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; padding: 8px 12px calc(16px + env(safe-area-inset-bottom)); margin-top: auto; }
+    .invest-btn { background: #141a26; border: 1px solid var(--border); border-radius: 14px; color: #fff; padding: 12px 14px; text-align: left; cursor: pointer; }
+    .next-btn { background: linear-gradient(180deg, #f7cf6a 0%, #e0a21f 100%); border: none; border-radius: 14px; color: #1a1405; font-size: 19px; font-weight: 900; cursor: pointer; box-shadow: 0 8px 22px rgba(242,185,56,0.3), inset 0 1px 0 rgba(255,255,255,0.45); }
+    .next-btn:active { transform: translateY(1px); }
+
+    #invest-sheet { display: none; position: fixed; top: 0; bottom: 0; left: max(0px, calc(50% - 240px)); width: min(100%, 480px); z-index: 200; background: var(--bg); overflow-y: auto; padding-bottom: 78px; }
+    #invest-sheet.show { display: block; }
+    #invest-sheet nav { z-index: 210; }
+    #invest-sheet header .header-top { gap: 8px; }
+    #invest-sheet .save-top-btn, #invest-sheet .date-badge { white-space: nowrap; }
+    #invest-sheet .date-badge { font-size: 11px; padding: 4px 6px; }
+
+
     /* ===== 시작 화면 리뉴얼 (히어로 스타일) ===== */
     #start-screen { padding: 18px 14px 36px; background: radial-gradient(circle at 50% 0%, rgba(242,185,56,0.10), rgba(11,14,20,0) 55%), linear-gradient(180deg, #0f1420 0%, #0b0e14 100%); }
     .hero-head { margin-bottom: 12px; }
@@ -537,7 +589,7 @@
   <div id="start-screen">
     <div class="hero-head">
       <div class="intro-sub">진짜로 대박나는 인생회귀 게임</div>
-      <h1 class="intro-title">나 혼자만 <span>상한가 v6</span></h1>
+      <h1 class="intro-title">나 혼자만 <span>상한가 v7</span></h1>
     </div>
 
     <div id="continue-box">
@@ -552,7 +604,7 @@
     <div class="hero-stage" id="heroStage">
       <div class="hero-bg" id="heroBg"></div>
       <div class="hero-glow" id="heroGlow"></div>
-      <div class="hero-chip hero-chip-date">1998년 1월 · IMF 외환위기</div>
+      <div class="hero-chip hero-chip-date">1998년 1월 · 10세 · 초등학생</div>
       <div class="hero-chip hero-chip-cash" id="heroCash">💰 1,500만 원</div>
       <div class="hero-figure" id="heroFigure"></div>
       <div class="hero-chip hero-chip-name" id="heroName">성진우 · 기본형</div>
@@ -591,14 +643,73 @@
         </div>
       </div>
 
-      <button class="start-btn" onclick="startNewGame()">1998년으로 회귀 시작 ▶</button>
+      <button class="start-btn" onclick="startNewGame()">1998년, 10살로 회귀 시작 ▶</button>
     </div>
   </div>
 
   <!-- ==================== 2. 메인 게임 화면 ==================== -->
   <div id="game-screen">
+    <!-- ===== 라이프 메인 화면 ===== -->
+    <div id="life-screen">
+      <div class="life-top">
+        <div class="life-stat"><div class="lbl">현금</div><div class="val" id="lfCash">0</div></div>
+        <div class="life-stat"><div class="lbl">자산</div><div class="val" id="lfAssets">0</div></div>
+        <div class="life-stat"><div class="lbl">대출</div><div class="val" id="lfDebt" style="color:var(--red);">0</div></div>
+        <div class="life-stat"><div class="lbl">순자산</div><div class="val" id="lfNet" style="color:var(--accent);">0</div></div>
+        <button class="life-icon" onclick="openSheet('home')">🔔<i class="dot" id="lfBell"></i></button>
+        <button class="life-icon" onclick="openSheet('save')">⚙️</button>
+      </div>
+
+      <div class="life-chips">
+        <div class="life-chip"><div class="lbl">월 손익</div><div class="val" id="lfDelta">+0</div></div>
+        <div class="life-chip"><div class="lbl">경과</div><div class="val" id="lfElapsed">0개월</div></div>
+        <div class="life-chip"><div class="lbl">1조 클럽까지</div><div class="val" id="lfGoal">1조</div></div>
+        <div class="life-chip"><div class="lbl">업적</div><div class="val" id="lfAch">0 / 0</div></div>
+      </div>
+
+      <div class="life-hero" id="lifeHero">
+        <div class="hero-bg" id="lifeBg"></div>
+        <div class="hero-glow" id="lifeGlow"></div>
+        <div class="life-hero-top">
+          <div class="life-date" id="lfDate">1998년 1월</div>
+          <button class="life-stage-chip" id="lfStageChip" onclick="showStageInfo()">10세 · 초등학생 ›</button>
+          <span style="flex:1;"></span>
+          <button class="life-sq" onclick="openSheet('flex')">🛍️</button>
+          <button class="life-sq" onclick="openSheet('home')">📊</button>
+        </div>
+        <div class="life-asset-chips" id="lfAssetChips"></div>
+        <div class="life-figure" id="lfFigure"></div>
+        <div class="life-caption">
+          <div class="hero-caption-top"><span id="lfNewsDate">회귀일보 · 1998.01</span><span class="hero-tag" id="lfNewsTag">속보</span></div>
+          <div class="hero-headline" id="lfHeadline"></div>
+          <div class="intuition" id="lfIntuition"></div>
+        </div>
+      </div>
+
+      <div class="stat-tiles life-tiles" id="lfTiles"></div>
+
+      <div class="ap-row">
+        <span>행동력</span>
+        <div class="ap-bar"><i id="apFill" style="width:100%;"></i></div>
+        <span id="apText" style="color:var(--accent);">8/8</span>
+        <span id="apSta" style="color:var(--text-muted); font-weight:600;">· 체력 10</span>
+      </div>
+      <div class="act-grid" id="actGrid"></div>
+
+      <div class="life-bottom">
+        <button class="invest-btn" onclick="openSheet('stocks')">
+          <div style="font-size:15px; font-weight:800;">📈 투자 · 대출</div>
+          <div style="font-size:15px; font-weight:800; color:var(--accent); margin-top:2px;" id="lfInvestVal">0</div>
+        </button>
+        <button class="next-btn" onclick="nextTurn()">다음 달 ▶</button>
+      </div>
+    </div>
+
+    <!-- ===== 투자·대출 시트 (기존 탭 화면) ===== -->
+    <div id="invest-sheet">
     <header>
       <div class="header-top">
+        <button class="save-top-btn" onclick="closeSheet()">← 닫기</button>
         <div class="player-badge">
           <div class="mini-avatar" id="hudAvatar"></div>
           <div>
@@ -823,7 +934,7 @@
     <!-- 하단 내비게이션 -->
     <nav>
       <button class="nav-btn active" onclick="switchTab('home')">
-        <span class="nav-icon">📊</span>홈
+        <span class="nav-icon">📊</span>요약
       </button>
       <button class="nav-btn" onclick="switchTab('stocks')">
         <span class="nav-icon">📈</span>현물차트
@@ -841,6 +952,7 @@
         <span class="nav-icon">💾</span>저장/로드
       </button>
     </nav>
+    </div>
   </div>
 </div>
 
@@ -854,7 +966,7 @@ const characterPresets = [
     name: "기본형",
     headline: "기본형 — 균형 잡힌 시작",
     desc: "어느 한쪽으로도 치우치지 않는다. 처음 하는 사람에게 무난하고, 어떤 길로 가든 막히는 곳이 없다.",
-    bonusText: "초기자금 1,500만 원 / 모든 능력치 밸런스",
+    bonusText: "초기 용돈 3만 원 / 모든 능력치 밸런스",
     initCash: 15000000,
     stats: { int: 10, charm: 10, sta: 10, net: 5, act: 5 },
     hairM: "#2b231d", hairF: "#2b231d", clothes: "#3b5978", inner: "#ffffff", bg: "linear-gradient(180deg,#5b7996,#2a394a)"
@@ -913,8 +1025,8 @@ const characterPresets = [
     id: "GOLD",
     name: "금수저",
     headline: "금수저 — 압도적인 초기 자본",
-    desc: "태어날 때부터 든든한 집안 배경을 가진 금수저. 1억 원의 거대한 시드머니로 시작한다.",
-    bonusText: "초기자금 1억 원으로 시작!",
+    desc: "태어날 때부터 든든한 집안 배경을 가진 금수저. 또래보다 훨씬 넉넉한 용돈으로 시작한다.",
+    bonusText: "초기 용돈 20만 원 (일반의 약 7배)!",
     initCash: 100000000,
     stats: { int: 12, charm: 16, sta: 8, net: 18, act: 6 },
     hairM: "#18181b", hairF: "#271c19", clothes: "#a39178", inner: "#e5e5e5", bg: "linear-gradient(180deg,#857250,#382f1e)"
@@ -960,7 +1072,7 @@ function renderRadarSVG(stats) {
     { key: 'charm', label: '매력', val: stats.charm, angle: -18 },
     { key: 'sta', label: '체력', val: stats.sta, angle: 54 },
     { key: 'net', label: '인맥', val: stats.net, angle: 126 },
-    { key: 'act', label: '행동력', val: stats.act, angle: 198 }
+    { key: 'act', label: '추진력', val: stats.act, angle: 198 }
   ];
 
   function pt(angleDeg, r) {
@@ -1003,38 +1115,19 @@ function renderRadarSVG(stats) {
 const STAT_COLORS = { int: '#5b8def', charm: '#ff7ab6', sta: '#3fb950', net: '#b48cff', act: '#f2b938' };
 
 function buildHeroBg() {
-  let seed = 7;
-  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-  let svg = '<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">';
-  svg += '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1222"/><stop offset="0.55" stop-color="#2a2a4a"/><stop offset="1" stop-color="#7a4e5f"/></linearGradient></defs>';
-  svg += '<rect width="400" height="400" fill="url(#sky)"/>';
-  for (let i = 0; i < 40; i++) svg += `<circle cx="${(rnd() * 400).toFixed(0)}" cy="${(rnd() * 150).toFixed(0)}" r="${(rnd() * 0.9 + 0.3).toFixed(1)}" fill="#fff" opacity="${(rnd() * 0.6 + 0.2).toFixed(2)}"/>`;
-  [['#141a2c', 0.9, 130, 250], ['#0c101c', 1, 90, 190]].forEach(([fill, op, minH, maxH], layer) => {
-    let x = -10;
-    while (x < 410) {
-      const w = 28 + rnd() * 34, h = minH + rnd() * (maxH - minH), y = 400 - h;
-      svg += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="${fill}" opacity="${op}"/>`;
-      if (layer === 1 && rnd() < 0.5) svg += `<rect x="${(x + w / 2 - 1).toFixed(0)}" y="${(y - 18).toFixed(0)}" width="2" height="18" fill="${fill}"/>`;
-      const cols = Math.floor(w / 9), rows = Math.floor(h / 13);
-      for (let r = 1; r < rows; r++) for (let c = 0; c < cols; c++) {
-        if (rnd() < (layer === 1 ? 0.34 : 0.2)) svg += `<rect x="${(x + 4 + c * 9).toFixed(0)}" y="${(y + 6 + r * 13).toFixed(0)}" width="4" height="6" fill="#ffd27a" opacity="${(rnd() * 0.6 + 0.3).toFixed(2)}"/>`;
-      }
-      x += w + 2 + rnd() * 4;
-    }
-  });
-  svg += '</svg>';
-  document.getElementById('heroBg').innerHTML = svg;
+  document.getElementById('heroBg').innerHTML = sceneSVG('room', 0, 'c');
 }
 
-function getHeroAvatarSVG(preset, gender) {
+function getHeroAvatarSVG(preset, gender, uid) {
+  uid = uid || 'c';
   const base = getAvatarSVG(preset, gender).replace('</svg>', '');
   const extra = `
     <path d="M40 70 L50 92 L60 70 L55 70 L50 80 L45 70 Z" fill="rgba(0,0,0,0.25)"/>
-    <path d="M16 100 Q20 70 50 70 Q80 70 84 100 Z" fill="url(#shade)" opacity="0.5"/>
-    <ellipse cx="50" cy="42" rx="19" ry="22" fill="url(#faceShade)"/>`;
+    <path d="M16 100 Q20 70 50 70 Q80 70 84 100 Z" fill="url(#shade${uid})" opacity="0.5"/>
+    <ellipse cx="50" cy="42" rx="19" ry="22" fill="url(#faceShade${uid})"/>`;
   const defs = `<defs>
-      <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0.45"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.08"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></linearGradient>
-      <radialGradient id="faceShade" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="1" stop-color="#a0603c" stop-opacity="0.22"/></radialGradient>
+      <linearGradient id="shade${uid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0.45"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.08"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></linearGradient>
+      <radialGradient id="faceShade${uid}" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="1" stop-color="#a0603c" stop-opacity="0.22"/></radialGradient>
     </defs>`;
   return base.replace(/(<svg[^>]*>)/, '$1' + defs) + extra + '</svg>';
 }
@@ -1048,12 +1141,12 @@ function updateHeroName() {
 function renderHero(cur, animate) {
   document.getElementById('heroGlow').style.background = cur.clothes;
   const fig = document.getElementById('heroFigure');
-  fig.innerHTML = getHeroAvatarSVG(cur, selectedGender);
+  fig.innerHTML = getHeroAvatarSVG(lifeLook(cur, lifeStages[0]), selectedGender, 'c');
   if (animate) { fig.classList.remove('pop'); void fig.offsetWidth; fig.classList.add('pop'); }
-  document.getElementById('heroCash').innerText = '💰 초기자금 ' + fmt(cur.initCash);
+  document.getElementById('heroCash').innerText = '💰 초기 용돈 ' + fmt(getStartCash(cur));
   document.getElementById('heroHeadline').innerText = cur.headline;
   updateHeroName();
-  const labels = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '행동력' };
+  const labels = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '추진력' };
   document.getElementById('statTiles').innerHTML = Object.keys(labels).map(k => `
     <div class="stat-tile">
       <div class="num" style="color:${STAT_COLORS[k]};">${cur.stats[k]}</div>
@@ -1150,7 +1243,7 @@ let state = {
 };
 
 const jobs = [
-  { name: "알바생", salary: 800000, cost: 0 },
+  { name: "계약직 사원", salary: 800000, cost: 0 },
   { name: "중소기업 사원", salary: 1800000, cost: 5000000 },
   { name: "대기업 대리", salary: 3500000, cost: 20000000 },
   { name: "외국계 펀드매니저", salary: 12000000, cost: 100000000 },
@@ -1205,10 +1298,14 @@ const flexData = [
   { id: "YACHT", name: "개인 요트", cost: 8000000000, desc: "바다 위의 사교 클럽", stats: { charm: 8, net: 6 } },
   { id: "PRIVATE_JET", name: "초호화 전용기", cost: 30000000000, desc: "글로벌 억만장자 사교 클럽 프리패스", stats: { charm: 5, net: 10 } }
 ];
-const STAT_LABELS = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '행동력' };
+const STAT_LABELS = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '추진력' };
 
 const historicalEvents = {
-  "1998-1": "IMF 구제금융 한파로 모든 자산이 폭락 중입니다. 저점 매수할 시드머니를 모으세요!",
+  "1998-1": "IMF 구제금융 한파로 온 나라가 어렵습니다. 지금은 힘이 없지만, 미래를 아는 당신에게 시간은 가장 큰 무기입니다!",
+  "1998-3": "IMF 관리체제… \"금 모으기 운동\" 전국 확산",
+  "1998-7": "박세리, US여자오픈 우승! 외환위기에 지친 국민에게 희망을 안깁니다.",
+  "1999-12": "Y2K 밀레니엄 버그 공포! 새천년을 앞두고 전 세계가 술렁입니다.",
+  "2000-6": "분단 후 첫 남북정상회담 개최! 한반도에 화해 분위기가 퍼집니다.",
   "1999-5": "닷컴 버블 개막! IT/인터넷 테마주가 미친 듯이 폭등하기 시작합니다.",
   "2000-8": "닷컴 버블 붕괴 조짐! 거품이 꺼지며 작전주들이 -90% 폭락합니다.",
   "2002-6": "한일 월드컵 4강 신화! 대한민국 소비 심리가 뜨겁게 달아오릅니다.",
@@ -1272,7 +1369,10 @@ function startNewGame() {
     },
     year: 1998,
     month: 1,
-    cash: preset.initCash,
+    cash: getStartCash(preset),
+    birthYear: BIRTH_YEAR,
+    stress: 0,
+    lastDelta: 0,
     debt: 0,
     jobLevel: 0,
     stocks: {},
@@ -1292,12 +1392,14 @@ function startNewGame() {
 function enterGameScreen() {
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-screen').style.display = 'block';
+  closeSheet(true);
   selectStock('SAMSUNG');
   renderAll();
   renderSaveSlots();
 }
 
 function goToTitleScreen() {
+  closeSheet(true);
   checkExistingAutoSave();
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('start-screen').style.display = 'flex';
@@ -1493,11 +1595,16 @@ function fmt(num) {
   num = Math.floor(num);
   const a = Math.abs(num);
   const nf = (v) => Number(v.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 });
-  if (a >= 1e16) return nf(num / 1e16) + "경 원";
-  if (a >= 1e12) return nf(num / 1e12) + "조 원";
+  const up = (v, limit) => Number(v.toFixed(2)) >= limit;
+  if (a >= 1e16 || up(a / 1e12, 9999.5)) return nf(num / 1e16) + "경 원";
+  if (a >= 1e12 || up(a / 1e8, 9999.5)) return nf(num / 1e12) + "조 원";
   if (a >= 1e8) return nf(num / 1e8) + "억 원";
-  if (a >= 1e4) return nf(num / 1e4) + "만 원";
+  if (a >= 1e4) return Math.floor(num / 1e4).toLocaleString('en-US') + "만 원";
   return num.toLocaleString('en-US') + "원";
+}
+
+function fmtShort(num) {
+  return fmt(num).replace(/ ?원$/, '');
 }
 
 function getStock(id) {
@@ -1589,11 +1696,13 @@ function stockTrend(s, y, m, mt) {
 }
 
 function nextTurn() {
+  const prevAge = getAge(), prevStageId = getStage().id;
   state.month++;
   if (state.month > 12) {
     state.month = 1;
     state.year++;
   }
+  handleLifeProgress(prevAge, prevStageId);
 
   const mt = marketTrend(state.year, state.month);
   const nasdaqChange = mt + (Math.random() - 0.48) * 0.1;
@@ -1675,7 +1784,11 @@ ${vItem.name} 지분이 상장되어 +${fmt(reward)} 회수 완료!`);
 
   if (state.month === 12) yearEndSettlement();
 
-  state.netHistory.push({ y: state.year, m: state.month, v: Math.floor(calculateNetWorth(state)) });
+  const nwNow = Math.floor(calculateNetWorth(state));
+  const prevNw = state.netHistory.length ? state.netHistory[state.netHistory.length - 1].v : nwNow;
+  state.lastDelta = nwNow - prevNw;
+  state.netHistory.push({ y: state.year, m: state.month, v: nwNow });
+  lifeMonthlyReset();
   if (state.netHistory.length > 400) state.netHistory.shift();
 
   saveGameToStorage(AUTO_SAVE_KEY, false);
@@ -1687,10 +1800,12 @@ ${vItem.name} 지분이 상장되어 +${fmt(reward)} 회수 완료!`);
 function getMaxLoanLimit() {
   const baseLimit = [10000000, 50000000, 200000000, 1000000000, 5000000000];
   const base = baseLimit[state.jobLevel] || 10000000;
+  if (getAge() < 19) return 0;
   return Math.floor(base * statEff().loanMul);
 }
 
 function takeLoan() {
+  if (getAge() < 19) { alert('대출은 만 19세(성인)부터 가능합니다.'); return; }
   const amt = parseFloat(document.getElementById('loanAmountInput').value);
   if (!amt || amt <= 0) {
     alert("금액을 올바르게 입력하세요.");
@@ -1731,6 +1846,7 @@ function repayLoan() {
 }
 
 function openFuturesPosition(type) {
+  if (getAge() < 19) { alert('선물 거래는 만 19세(성인)부터 가능합니다.'); return; }
   const symbol = document.getElementById('futuresAssetSelect').value;
   const leverage = parseFloat(document.getElementById('futuresLeverage').value);
   const margin = parseFloat(document.getElementById('futuresMargin').value);
@@ -1893,6 +2009,7 @@ function executeStockTrade(isBuy) {
 }
 
 function buyRealEstate(id) {
+  if (getAge() < 19) { alert('부동산 매입은 만 19세(성인)부터 가능합니다.'); return; }
   const r = realEstateData.find(x => x.id === id);
   const cost = Math.floor(r.price * (state.reIndex || 1));
   if (state.cash < cost) {
@@ -1926,6 +2043,7 @@ function sellRealEstate(id) {
 }
 
 function investVenture(id) {
+  if (getAge() < 19) { alert('벤처 투자는 만 19세(성인)부터 가능합니다.'); return; }
   const v = ventureData.find(x => x.id === id);
   if (state.cash < v.cost) {
     alert("투자금이 부족합니다!");
@@ -1939,6 +2057,7 @@ function investVenture(id) {
 }
 
 function upgradeJob() {
+  if (getAge() < 23) { alert('아직 학생입니다. 23세부터 직장인으로 일하며 승진할 수 있습니다.'); return; }
   const next = jobs[state.jobLevel + 1];
   if (!next) return;
   const finalCost = getPromoCost(next);
@@ -1981,7 +2100,7 @@ function statEff() {
     hint: st.int >= 18,
     promoDiscount: Math.min(0.3, st.charm * 0.005),
     salaryMul: Math.min(1.15, Math.max(0.95, 1 + (st.sta - 10) * 0.005)),
-    loanMul: 1 + st.net * 0.01,
+    loanMul: Math.min(3, 1 + st.net * 0.01),
     eventChance: Math.min(0.6, 0.25 + st.act * 0.01),
     feeRate: Math.max(0.0005, 0.0025 - st.act * 0.0001)
   };
@@ -1989,7 +2108,9 @@ function statEff() {
 
 function getMonthlySalary() {
   const charBonus = (state.player.charId === 'STAMINA') ? 1.3 : 1.0;
-  return Math.floor(jobs[state.jobLevel].salary * charBonus * statEff().salaryMul);
+  const stg = getStage();
+  const basePay = stg.allowance ? stg.allowance : jobs[state.jobLevel].salary;
+  return Math.floor(basePay * charBonus * statEff().salaryMul);
 }
 
 function getPromoCost(next) {
@@ -2012,6 +2133,11 @@ function addStat(key, d) {
 function payCost(amount) {
   amount = Math.floor(amount);
   if (amount <= 0) return '';
+  if (getAge() < 19) {
+    const paid = Math.max(0, Math.min(state.cash, amount));
+    state.cash -= paid;
+    return paid < amount ? ` (모자란 ${fmt(amount - paid)}은 부모님이 대신 내주셨다)` : '';
+  }
   let note = '';
   if (state.cash < amount) {
     const shortage = amount - state.cash;
@@ -2066,7 +2192,7 @@ const gameEvents = [
           { label: '정중히 거절', run() { return '의리와 돈은 별개입니다. 거절했습니다.'; } }
         ] }; } },
 
-  { id: 'audit', weight: 1, minYear: 2000, cond: () => calculateNetWorth(state) >= 50000000, make() {
+  { id: 'audit', weight: 1, minYear: 2000, cond: () => getAge() >= 23 && calculateNetWorth(state) >= 50000000, make() {
       const nw = calculateNetWorth(state);
       const full = Math.floor(nw * 0.015), hire = Math.floor(nw * 0.003), heavy = Math.floor(nw * 0.025);
       const p = Math.min(0.85, 0.35 + state.player.stats.int * 0.015);
@@ -2081,7 +2207,7 @@ const gameEvents = [
               return `❌ 소명에 실패해 가산세까지 ${fmt(heavy)} 추징되었습니다.${n}`; } }
         ] }; } },
 
-  { id: 'family', weight: 1.5, make() {
+  { id: 'family', weight: 1.5, cond: () => getAge() >= 19, make() {
       const c = Math.max(1000000, getMonthlySalary() * 3);
       return { title: '🏥 부모님 병원비',
         text: `부모님이 갑자기 입원하셨습니다. 병원비 ${fmt(c)}이(가) 필요합니다.`,
@@ -2091,7 +2217,7 @@ const gameEvents = [
           { label: '바빠서 모른 척한다', run() { return `마음이 편치 않습니다... (${addStat('charm', -1)}, ${addStat('net', -1)})`; } }
         ] }; } },
 
-  { id: 'seminar', weight: 1.5, make() {
+  { id: 'seminar', weight: 1.5, cond: () => getAge() >= 19, make() {
       const c = Math.max(500000, getMonthlySalary() * 2);
       return { title: '📚 투자 세미나 초대',
         text: `유명 투자자의 세미나 초대장이 왔습니다. 참가비는 ${fmt(c)}입니다.`,
@@ -2101,7 +2227,7 @@ const gameEvents = [
         ] }; } },
 
   { id: 'gym', weight: 1.2, make() {
-      const c = Math.max(300000, Math.floor(getMonthlySalary() * 1.5));
+      const c = scaleCost(300000, 1.5);
       return { title: '💪 헬스장 장기 등록 이벤트',
         text: `체력이 곧 자산입니다. 헬스장 장기 할인 등록 이벤트가 열렸습니다. (${fmt(c)})`,
         choices: [
@@ -2109,7 +2235,7 @@ const gameEvents = [
           { label: '작심삼일이라 패스', run() { return '다음 달부터 하기로 했습니다.'; } }
         ] }; } },
 
-  { id: 'golf', weight: 1, minYear: 2000, cond: () => state.jobLevel >= 1, make() {
+  { id: 'golf', weight: 1, minYear: 2000, cond: () => state.jobLevel >= 1 && getAge() >= 23, make() {
       const c = Math.max(1000000, getMonthlySalary() * 2);
       return { title: '⛳ 사교 골프 모임',
         text: `재계 인사들이 모이는 골프 모임에 초대받았습니다. (비용 ${fmt(c)})`,
@@ -2118,11 +2244,11 @@ const gameEvents = [
           { label: '일정이 있어 불참', run() { return '기회는 또 옵니다.'; } }
         ] }; } },
 
-  { id: 'sidejob', weight: 1.5, make() {
+  { id: 'sidejob', weight: 1.5, cond: () => getAge() >= 16, make() {
       const sal = getMonthlySalary();
       const p = Math.min(0.85, 0.4 + state.player.stats.act * 0.02);
       return { title: '💼 부업 기회',
-        text: `주말 부업 제안이 들어왔습니다. 행동력이 높을수록 성공 확률이 올라갑니다.<br><span style="color:var(--text-muted);">현재 성공확률 ${Math.round(p * 100)}%</span>`,
+        text: `주말 부업 제안이 들어왔습니다. 추진력이 높을수록 성공 확률이 올라갑니다.<br><span style="color:var(--text-muted);">현재 성공확률 ${Math.round(p * 100)}%</span>`,
         choices: [
           { label: '도전한다', run() {
               if (Math.random() < p) { const g = sal * 4; state.cash += g; return `🎉 부업 대성공! +${fmt(g)}`; }
@@ -2140,7 +2266,7 @@ const gameEvents = [
               const l = Math.floor(state.cash * 0.05); state.cash -= l; return `💸 당했습니다... -${fmt(l)} (지능이 높을수록 피할 확률이 올라갑니다)`; } }
         ] }; } },
 
-  { id: 'bonus', weight: 6, cond: () => state.month === 12 && state.jobLevel >= 1, make() {
+  { id: 'bonus', weight: 6, cond: () => state.month === 12 && state.jobLevel >= 1 && getAge() >= 23, make() {
       const g = getMonthlySalary() * 2;
       return { title: '🎁 연말 성과급',
         text: `한 해 수고했다며 회사에서 성과급을 지급했습니다.`,
@@ -2157,7 +2283,7 @@ const gameEvents = [
               return '다행히 아무 일 없었습니다.'; } }
         ] }; } },
 
-  { id: 'lottery', weight: 0.4, make() {
+  { id: 'lottery', weight: 0.4, cond: () => getAge() >= 19, make() {
       return { title: '🎟️ 편의점 복권',
         text: `계산대 옆 복권이 눈에 들어옵니다. 딱 한 장만?`,
         choices: [
@@ -2168,7 +2294,7 @@ const gameEvents = [
           { label: '지나간다', run() { return '현명한 선택(?)입니다.'; } }
         ] }; } },
 
-  { id: 'influencer', weight: 1, minYear: 2010, cond: () => state.player.stats.charm >= 15, make() {
+  { id: 'influencer', weight: 1, minYear: 2010, cond: () => getAge() >= 16 && state.player.stats.charm >= 15, make() {
       const sal = getMonthlySalary();
       const p = Math.min(0.9, 0.3 + state.player.stats.charm * 0.02);
       return { title: '📸 SNS 협찬 제안',
@@ -2177,6 +2303,45 @@ const gameEvents = [
           { label: '협찬을 받는다', run() {
               if (Math.random() < p) { const g = sal * 8; state.cash += g; return `🌟 대형 협찬 성사! +${fmt(g)} (${addStat('net', 1)})`; }
               const g = sal; state.cash += g; return `소소한 협찬으로 +${fmt(g)}`; } }
+        ] }; } },
+
+  { id: 'allowance_ask', weight: 2.5, cond: () => getAge() <= 18, make() {
+      const base = getMonthlySalary();
+      const s = state.player.stats;
+      const p = Math.min(0.8, 0.35 + s.charm * 0.008 + s.int * 0.004);
+      return { title: '🧒 용돈 인상 협상',
+        text: `엄마 아빠에게 용돈을 올려 달라고 졸라볼까요? 매력과 지능이 높을수록 잘 통합니다.<br><span style="color:var(--text-muted);">현재 성공확률 ${Math.round(p * 100)}%</span>`,
+        choices: [
+          { label: '졸라본다', run() {
+              if (Math.random() < p) { const g = base * 2; state.cash += g; return `🎉 "이번 달만이다~" 특별 용돈 +${fmt(g)}!`; }
+              addStress(8); return '😤 "공부나 해!" 혼만 났다... (스트레스 +8)'; } },
+          { label: '그냥 참는다', run() { return '착한 아이로 남기로 했다.'; } }
+        ] }; } },
+
+  { id: 'cram', weight: 2, cond: () => getAge() <= 18, make() {
+      const c = Math.floor(getMonthlySalary() * 1.5);
+      return { title: '📚 학원 등록 권유',
+        text: `엄마가 "옆집 애는 벌써 다닌다더라"며 학원 등록을 권합니다. 비용은 ${fmt(c)}입니다.`,
+        choices: [
+          { label: `다닌다 (${fmt(c)})`, run() { const n = payCost(c); addStress(8); return `성적이 오르기 시작했다! (${addStat('int', 2)}, 스트레스 +8)${n}`; } },
+          { label: '거절한다', run() { return '"나는 내 방식대로 할래요." 거절했다.'; } }
+        ] }; } },
+
+  { id: 'party', weight: 2, cond: () => getAge() <= 22, make() {
+      const c = Math.floor(getMonthlySalary() * 0.4);
+      return { title: '🎂 친구 생일 파티',
+        text: `친한 친구가 생일 파티에 초대했습니다. 선물비는 ${fmt(c)} 정도입니다.`,
+        choices: [
+          { label: `참석한다 (${fmt(c)})`, run() { const n = payCost(c); addStress(-8); return `즐거운 시간! 우정이 깊어졌다. (${addStat('net', 1)}, 스트레스 -8)${n}`; } },
+          { label: '불참', run() { return '집에서 쉬었다.'; } }
+        ] }; } },
+
+  { id: 'club', weight: 1.5, cond: () => getAge() >= 13 && getAge() <= 22, make() {
+      return { title: '🎭 동아리·학생회 활동',
+        text: `선배가 동아리(학생회) 활동에 같이 하자며 손을 내밀었습니다.`,
+        choices: [
+          { label: '함께한다', run() { addStress(6); return `바쁘지만 값진 경험! (${addStat('net', 2)}, ${addStat('charm', 1)}, 스트레스 +6)`; } },
+          { label: '정중히 거절', run() { return '내 시간이 더 소중하다.'; } }
         ] }; } },
 
   { id: 'tenant', weight: 1.5, cond: () => state.realEstates.length > 0, make() {
@@ -2319,17 +2484,21 @@ function renderEffects() {
     `🧠 지능 ${st.int}: 이벤트 성공확률 +${Math.round(e.winBonus * 100)}%p · ${e.hint ? '<b style="color:var(--green);">2개월 앞 뉴스 힌트 활성</b>' : '18 이상이면 뉴스 힌트'}`,
     `💖 매력 ${st.charm}: 승진·이직 비용 -${(e.promoDiscount * 100).toFixed(1)}%`,
     `💪 체력 ${st.sta}: 월급 ${sal >= 0 ? '+' : ''}${sal}%`,
-    `🤝 인맥 ${st.net}: 대출 한도 +${st.net}%`,
-    `⚡ 행동력 ${st.act}: 이벤트 발생 ${Math.round(e.eventChance * 100)}% · 주식 수수료 ${(e.feeRate * 100).toFixed(2)}%`
+    `🤝 인맥 ${st.net}: 대출 한도 +${Math.round((e.loanMul - 1) * 100)}%`,
+    `⚡ 추진력 ${st.act}: 이벤트 발생 ${Math.round(e.eventChance * 100)}% · 주식 수수료 ${(e.feeRate * 100).toFixed(2)}%`
   ].join('<br>');
 }
 
 function ensureStateDefaults() {
+  if (state.birthYear == null) state.birthYear = state.year - 25;
+  if (state.stress == null) state.stress = 0;
+  if (state.lastDelta == null) state.lastDelta = 0;
   if (state.reIndex == null) state.reIndex = 1;
   if (!state.reBuy) state.reBuy = {};
   if (state.taxBase == null) state.taxBase = 0;
   if (!state.priceHistory) state.priceHistory = {};
   if (!state.achievements) state.achievements = [];
+  if (state.achSeen == null) state.achSeen = state.achievements.length;
   if (!state.counters) state.counters = {};
   ['liquidations', 'maxLev', 'bestFut', 'crisisShort', 'dotcomWin', 'btcWin', 'ventureWins', 'events', 'taxPaid'].forEach(k => {
     if (state.counters[k] == null) state.counters[k] = 0;
@@ -2338,6 +2507,373 @@ function ensureStateDefaults() {
   if (state.netHistory.length === 0) {
     state.netHistory.push({ y: state.year, m: state.month, v: Math.floor(calculateNetWorth(state)) });
   }
+  if (state.ap == null) state.ap = getMaxAP();
+}
+
+
+/* ==================== v6. 라이프 시스템 (10세 시작 / 행동력 / 메인 화면) ==================== */
+const BIRTH_YEAR = 1988;
+const lifeStages = [
+  { id: 'elem', name: '초등학생', min: 10, max: 12, allowance: 30000, scene: 'room', look: 'kid', scale: 0.84 },
+  { id: 'mid', name: '중학생', min: 13, max: 15, allowance: 60000, scene: 'class', look: 'uniform', scale: 0.92 },
+  { id: 'high', name: '고등학생', min: 16, max: 18, allowance: 120000, scene: 'class', look: 'uniform', scale: 0.97 },
+  { id: 'univ', name: '대학생', min: 19, max: 22, allowance: 400000, scene: 'campus', look: 'casual', scale: 1 },
+  { id: 'work', name: '사회인', min: 23, max: 999, allowance: 0, scene: 'city', look: 'suit', scale: 1 }
+];
+
+function getAge() { return state.year - state.birthYear; }
+function getStage() {
+  const a = getAge();
+  return lifeStages.find(s => a >= s.min && a <= s.max) || lifeStages[lifeStages.length - 1];
+}
+function getStartCash(preset) { return Math.max(1000, Math.round(preset.initCash / 500 / 1000) * 1000); }
+function scaleCost(minAdult, mult) {
+  const v = Math.floor(getMonthlySalary() * mult);
+  return getStage().allowance ? v : Math.max(minAdult, v);
+}
+
+function lifeLook(preset, stage) {
+  if (stage.look === 'kid') return Object.assign({}, preset, { clothes: '#6b7280', inner: '#f2c14e' });
+  if (stage.look === 'uniform') return Object.assign({}, preset, { clothes: '#1f2a44', inner: '#ffffff' });
+  if (stage.look === 'casual') return Object.assign({}, preset, { clothes: '#3f6b5a', inner: '#e8e0cf' });
+  return preset;
+}
+
+function getMaxAP() {
+  const st = state.player.stats;
+  return Math.max(3, Math.min(24, 6 + Math.floor(st.sta / 5) - Math.floor((state.stress || 0) / 20)));
+}
+
+function addStress(n) { state.stress = Math.max(0, Math.min(100, (state.stress || 0) + n)); }
+
+function statGain(key, bonus) {
+  const v = state.player.stats[key];
+  const p = Math.min(0.85, Math.max(0.15, 0.6 - v * 0.006 + (bonus || 0)));
+  if (v < 200 && Math.random() < p) { state.player.stats[key] = v + 1; return `${STAT_LABELS[key]} +1`; }
+  return '';
+}
+
+const WORK_LABEL = { elem: '심부름·용돈벌이', mid: '용돈벌이', high: '아르바이트', univ: '알바·과외', work: '야근·부업' };
+
+const LIFE_ACTIONS = [
+  { id: 'study', icon: '📖', minAge: 10, label: () => '공부', run() {
+      addStress(5);
+      const g = statGain('int', state.player.stats.act * 0.003);
+      return g ? `📖 열심히 공부했다! ${g}` : '📖 공부했지만 아직 성과가 눈에 띄지 않는다.'; } },
+  { id: 'exercise', icon: '💪', minAge: 10, label: () => '운동', run() {
+      addStress(2);
+      const g = statGain('sta');
+      return g ? `💪 땀 흘려 운동했다! ${g}` : '💪 운동했지만 아직 몸은 그대로다.'; } },
+  { id: 'work', icon: '💰', minAge: 10, label: (s) => WORK_LABEL[s.id], run() {
+      const base = getMonthlySalary();
+      const earn = Math.floor(base * (0.15 + Math.random() * 0.2) * (1 + state.player.stats.charm * 0.003));
+      state.cash += earn;
+      addStress(6);
+      const g = Math.random() < 0.2 ? statGain('act') : '';
+      return `💰 일을 해서 ${fmt(earn)}을 벌었다!${g ? ' ' + g : ''}`; } },
+  { id: 'style', icon: '✨', minAge: 13, label: () => '꾸미기', run() {
+      const cost = Math.floor(getMonthlySalary() * 0.15);
+      if (state.cash < cost) { showToast(`돈이 부족합니다 (${fmt(cost)} 필요)`); return null; }
+      state.cash -= cost; addStress(-2);
+      const g = statGain('charm');
+      return g ? `✨ 멋을 부렸다! ${g} (-${fmt(cost)})` : `✨ 꾸며봤지만 큰 변화는 없다. (-${fmt(cost)})`; } },
+  { id: 'network', icon: '🤝', minAge: 16, label: () => '인맥 관리', run() {
+      const cost = Math.floor(getMonthlySalary() * 0.15);
+      if (state.cash < cost) { showToast(`돈이 부족합니다 (${fmt(cost)} 필요)`); return null; }
+      state.cash -= cost; addStress(3);
+      const g = statGain('net');
+      return g ? `🤝 사람들을 만났다! ${g} (-${fmt(cost)})` : `🤝 안부를 주고받았다. (-${fmt(cost)})`; } },
+  { id: 'meet', icon: '💗', minAge: 10, label: () => '만남', run() {
+      const cost = getAge() >= 19 ? Math.floor(getMonthlySalary() * 0.05) : 0;
+      if (cost > 0) { if (state.cash < cost) { showToast(`돈이 부족합니다 (${fmt(cost)} 필요)`); return null; } state.cash -= cost; }
+      addStress(-10);
+      const r = Math.random();
+      const g = r < 0.4 ? statGain('net', 0.1) : (r < 0.7 ? statGain('charm', 0.1) : '');
+      return `💗 즐거운 만남! 스트레스 -10${g ? ' · ' + g : ''}`; } },
+  { id: 'rest', icon: '😴', minAge: 10, label: () => '휴식', run() {
+      addStress(-25);
+      return '😴 푹 쉬었다. 스트레스 -25'; } }
+];
+
+function doLifeAction(id) {
+  if (state.ap <= 0) { showToast('행동력이 부족합니다. 다음 달로 넘어가세요.'); return; }
+  const a = LIFE_ACTIONS.find(x => x.id === id);
+  if (!a) return;
+  const res = a.run();
+  if (res == null) return;
+  state.ap--;
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  renderAll();
+  showToast(res);
+}
+
+function handleLifeProgress(prevAge, prevStageId) {
+  const age = getAge(), stg = getStage();
+  if (stg.id !== prevStageId) {
+    const msg = {
+      mid: `🏫 중학교에 입학했습니다! (${age}세)\n월 용돈이 ${fmt(stg.allowance)}으로 올랐고, '꾸미기'가 가능해졌습니다.`,
+      high: `🏫 고등학교에 입학했습니다! (${age}세)\n월 용돈이 ${fmt(stg.allowance)}으로 올랐고, '인맥 관리'가 가능해졌습니다.`,
+      univ: `🎓 성인이 되어 대학생이 되었습니다! (${age}세)\n선물 거래·대출·부동산·벤처 투자가 모두 열렸습니다! 월 용돈 ${fmt(stg.allowance)}`,
+      work: `💼 사회인이 되었습니다! (${age}세)\n이제부터 직장 월급을 받고 승진할 수 있습니다.`
+    }[stg.id];
+    if (msg) alert(msg);
+  } else if (age > prevAge) {
+    showToast(`🎂 ${age}세가 되었습니다!`);
+  }
+  if (state.month === 1 && stg.allowance) {
+    const g = Math.floor(stg.allowance * 3);
+    state.cash += g;
+    showToast(`🧧 세뱃돈 ${fmt(g)}을 받았습니다!`);
+  }
+}
+
+function lifeMonthlyReset() {
+  if (state.stress >= 100) {
+    const t = addStat('sta', -1);
+    showToast(`😵 스트레스 과다로 번아웃! ${t}`);
+  }
+  addStress(-5);
+  state.ap = getMaxAP();
+}
+
+function openSheet(tab) {
+  const sh = document.getElementById('invest-sheet');
+  sh.classList.add('show');
+  if (tab === 'home') state.achSeen = state.achievements.length;
+  switchTab(tab || 'stocks');
+  sh.scrollTop = 0;
+  renderAll();
+}
+
+function closeSheet(silent) {
+  document.getElementById('invest-sheet').classList.remove('show');
+  if (!silent) renderAll();
+}
+
+function showInfo(title, html) {
+  currentEvent = null;
+  document.getElementById('eventBox').innerHTML =
+    `<div class="event-title">${title}</div><div class="event-text">${html}</div><button class="btn btn-gold" onclick="closeEvent()">확인</button>`;
+  document.getElementById('eventModal').classList.add('show');
+}
+
+function showStageInfo() {
+  const stg = getStage(), age = getAge();
+  const yes = (ok) => ok ? '<span style="color:var(--green);">가능</span>' : '<span style="color:var(--red);">불가</span>';
+  const pay = stg.allowance ? `월 용돈 <b>${fmt(getMonthlySalary())}</b>` : `월급 <b>${fmt(getMonthlySalary())}</b>`;
+  showInfo(`${age}세 · ${stg.allowance ? stg.name : jobs[state.jobLevel].name}`,
+    `${pay}<br>📈 현물 주식: ${yes(true)} (부모님 명의 계좌)<br>⚡ 선물 거래: ${yes(age >= 19)} (19세~)<br>🏦 대출: ${yes(age >= 19)} (19세~)<br>🏢 부동산·🚀 벤처: ${yes(age >= 19)} (19세~)<br>💼 취업·승진: ${yes(age >= 23)} (23세~)`);
+}
+
+function showStatInfo(key) {
+  const e = statEff(), st = state.player.stats;
+  const labels = { int: '지능', charm: '매력', sta: '체력', net: '인맥', act: '추진력', stress: '스트레스' };
+  const sal = ((e.salaryMul - 1) * 100).toFixed(1);
+  const m = {
+    int: `이벤트 성공확률 +${Math.round(e.winBonus * 100)}%p<br>18 이상이면 2개월 앞 뉴스 힌트가 보입니다.<br><span style="color:var(--text-muted);">올리는 법: 공부</span>`,
+    charm: `승진·이직 비용 -${(e.promoDiscount * 100).toFixed(1)}%<br>용돈 협상·협찬 성공률 상승<br><span style="color:var(--text-muted);">올리는 법: 꾸미기, 만남</span>`,
+    sta: `월급 ${sal >= 0 ? '+' : ''}${sal}%<br>행동력 최대치 +${Math.floor(st.sta / 5)}<br><span style="color:var(--text-muted);">올리는 법: 운동</span>`,
+    net: `대출 한도 +${Math.round((e.loanMul - 1) * 100)}%<br>친구 사업 제안 성공률 상승<br><span style="color:var(--text-muted);">올리는 법: 인맥 관리, 만남</span>`,
+    act: `이벤트 발생 ${Math.round(e.eventChance * 100)}%<br>주식 수수료 ${(e.feeRate * 100).toFixed(2)}%<br><span style="color:var(--text-muted);">올리는 법: 용돈벌이(일)</span>`,
+    stress: `높을수록 행동력 최대치가 줄고, 100이 되면 번아웃으로 체력이 깎입니다.<br>매달 5씩 자연 회복.<br><span style="color:var(--text-muted);">낮추는 법: 휴식, 만남, 운동</span>`
+  };
+  const val = key === 'stress' ? state.stress : st[key];
+  showInfo(`${labels[key]} ${val}`, m[key]);
+}
+
+/* ---------- 배경 장면 (직접 그린 벡터) ---------- */
+const sceneCache = {};
+function sceneSVG(kind, tier, uid) {
+  const ck = kind + '|' + (tier || 0) + '|' + uid;
+  if (sceneCache[ck]) return sceneCache[ck];
+  const u = uid + kind;
+  let seed = 11;
+  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  let b = `<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="${u}vg" cx="0.5" cy="0.5" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient></defs>`;
+
+  if (kind === 'room') {
+    b += `<defs>
+      <linearGradient id="${u}wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccaa6"/><stop offset="1" stop-color="#b59f78"/></linearGradient>
+      <linearGradient id="${u}win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9dcf3"/><stop offset="1" stop-color="#eef7fc"/></linearGradient></defs>
+      <rect width="400" height="400" fill="url(#${u}wall)"/>`;
+    for (let x = 6; x < 400; x += 26) b += `<rect x="${x}" y="0" width="2" height="300" fill="#fff" opacity="0.14"/>`;
+    b += `<rect y="300" width="400" height="100" fill="#8a6742"/><rect y="294" width="400" height="9" fill="#6c5035"/>`;
+    for (let y = 318; y < 400; y += 20) b += `<rect y="${y}" width="400" height="1.5" fill="#000" opacity="0.18"/>`;
+    for (let i = 0; i < 14; i++) b += `<rect x="${(rnd() * 400) | 0}" y="${300 + ((rnd() * 4) | 0) * 20}" width="1.5" height="20" fill="#000" opacity="0.14"/>`;
+    b += `<rect x="288" y="58" width="100" height="156" fill="#7a5c3e"/><rect x="296" y="66" width="84" height="140" fill="url(#${u}win)"/>
+      <rect x="336" y="66" width="4" height="140" fill="#7a5c3e"/><rect x="296" y="132" width="84" height="4" fill="#7a5c3e"/>
+      <path d="M284 52 L284 230 Q310 215 316 150 Q314 90 330 52 Z" fill="#c98f6b"/><path d="M392 52 L392 230 Q372 218 366 150 Q370 92 354 52 Z" fill="#b97c58"/>`;
+    b += `<circle cx="228" cy="96" r="24" fill="#f6f2e8" stroke="#4a3a28" stroke-width="4"/>`;
+    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; b += `<line x1="${(228 + 18 * Math.sin(a)).toFixed(1)}" y1="${(96 - 18 * Math.cos(a)).toFixed(1)}" x2="${(228 + 21 * Math.sin(a)).toFixed(1)}" y2="${(96 - 21 * Math.cos(a)).toFixed(1)}" stroke="#4a3a28" stroke-width="1.5"/>`; }
+    b += `<line x1="228" y1="96" x2="228" y2="81" stroke="#222" stroke-width="2.5"/><line x1="228" y1="96" x2="239" y2="102" stroke="#222" stroke-width="2.5"/>`;
+    b += `<rect x="14" y="252" width="150" height="50" fill="#7b5334"/><rect x="20" y="302" width="8" height="10" fill="#5a3b24"/><rect x="150" y="302" width="8" height="10" fill="#5a3b24"/>
+      <rect x="30" y="176" width="108" height="78" rx="8" fill="#3b3f45"/><rect x="38" y="184" width="68" height="62" rx="6" fill="#1f2d2b"/>
+      <circle cx="121" cy="198" r="5" fill="#8b9097"/><circle cx="121" cy="216" r="5" fill="#8b9097"/>
+      <path d="M84 176 L52 118 M84 176 L118 124" stroke="#2c2c2c" stroke-width="3" stroke-linecap="round"/>`;
+    b += `<rect x="186" y="128" width="84" height="174" fill="#8a6240"/>`;
+    const pal = ['#c0504d', '#4f81bd', '#9bbb59', '#f2b938', '#8064a2', '#4bacc6', '#e8e0cf'];
+    for (let i = 0; i < 4; i++) {
+      const y = 134 + i * 42;
+      b += `<rect x="190" y="${y}" width="76" height="36" fill="#6b4a2f"/>`;
+      let x = 192;
+      while (x < 260) { const w = 5 + rnd() * 5, h = 22 + rnd() * 12; b += `<rect x="${x.toFixed(0)}" y="${(y + 36 - h).toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="${pal[(rnd() * pal.length) | 0]}"/>`; x += w + 1; }
+    }
+    b += `<rect width="400" height="400" fill="#ffcf8a" opacity="0.07"/>`;
+  } else if (kind === 'class') {
+    b += `<defs><linearGradient id="${u}wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7dccb"/><stop offset="1" stop-color="#b9bfa8"/></linearGradient>
+      <linearGradient id="${u}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fcdee"/><stop offset="1" stop-color="#e6f3fb"/></linearGradient></defs>
+      <rect width="400" height="400" fill="url(#${u}wall)"/>`;
+    b += `<rect x="0" y="0" width="400" height="14" fill="#eee" opacity="0.8"/><rect x="60" y="4" width="80" height="6" fill="#fffbe0"/><rect x="260" y="4" width="80" height="6" fill="#fffbe0"/>`;
+    b += `<rect x="30" y="50" width="220" height="124" fill="#8a6a45"/><rect x="38" y="58" width="204" height="108" fill="#2f4a3d"/>`;
+    for (let i = 0; i < 6; i++) b += `<rect x="52" y="${72 + i * 15}" width="${60 + rnd() * 110}" height="3" fill="#fff" opacity="0.5"/>`;
+    b += `<rect x="30" y="172" width="220" height="8" fill="#6b4f33"/><rect x="60" y="168" width="22" height="5" fill="#fff"/>`;
+    b += `<rect x="286" y="46" width="104" height="150" fill="#7a7f86"/><rect x="294" y="54" width="88" height="134" fill="url(#${u}sky)"/><rect x="336" y="54" width="4" height="134" fill="#7a7f86"/><rect x="294" y="118" width="88" height="4" fill="#7a7f86"/>
+      <ellipse cx="330" cy="86" rx="18" ry="7" fill="#fff" opacity="0.85"/>`;
+    b += `<rect y="290" width="400" height="110" fill="#a58d6b"/><rect y="286" width="400" height="8" fill="#7f6a4d"/>`;
+    for (let i = 0; i < 3; i++) {
+      const x = 20 + i * 130, y = 250;
+      b += `<rect x="${x}" y="${y}" width="104" height="10" fill="#b88e5c"/><rect x="${x + 6}" y="${y + 10}" width="4" height="40" fill="#6f5a40"/><rect x="${x + 94}" y="${y + 10}" width="4" height="40" fill="#6f5a40"/>`;
+      b += `<rect x="${x + 28}" y="${y + 24}" width="48" height="8" fill="#7a8a96"/><rect x="${x + 30}" y="${y + 32}" width="4" height="26" fill="#5b6770"/><rect x="${x + 70}" y="${y + 32}" width="4" height="26" fill="#5b6770"/>`;
+    }
+    b += `<rect width="400" height="400" fill="#ffe2a8" opacity="0.06"/>`;
+  } else if (kind === 'campus') {
+    b += `<defs><linearGradient id="${u}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb9e8"/><stop offset="1" stop-color="#eaf5fb"/></linearGradient></defs>
+      <rect width="400" height="400" fill="url(#${u}sky)"/>
+      <ellipse cx="90" cy="70" rx="40" ry="12" fill="#fff" opacity="0.85"/><ellipse cx="300" cy="50" rx="50" ry="13" fill="#fff" opacity="0.8"/>`;
+    b += `<rect x="50" y="140" width="300" height="140" fill="#b0765a"/><polygon points="40,142 200,90 360,142" fill="#8f5a43"/><rect x="170" y="60" width="60" height="90" fill="#a56a50"/><polygon points="164,62 200,36 236,62" fill="#7d4c39"/>
+      <circle cx="200" cy="90" r="14" fill="#f6f2e8" stroke="#4a3a28" stroke-width="3"/><line x1="200" y1="90" x2="200" y2="82" stroke="#222" stroke-width="2"/><line x1="200" y1="90" x2="206" y2="93" stroke="#222" stroke-width="2"/>`;
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 9; c++) { if (c === 4) continue; b += `<rect x="${64 + c * 32}" y="${160 + r * 52}" width="18" height="30" fill="#f5e6b8"/><rect x="${64 + c * 32}" y="${160 + r * 52}" width="18" height="30" fill="none" stroke="#6b4a36" stroke-width="2"/>`; }
+    b += `<rect x="184" y="222" width="32" height="58" fill="#5a3b24"/>`;
+    b += `<rect y="280" width="400" height="120" fill="#6bb05a"/><polygon points="170,280 230,280 330,400 70,400" fill="#d9cdb6"/>`;
+    [[40, 250], [350, 245], [90, 270], [310, 272]].forEach(([x, y]) => { b += `<rect x="${x - 4}" y="${y}" width="8" height="34" fill="#6b4a2f"/><ellipse cx="${x}" cy="${y - 6}" rx="${26 + (x % 7)}" ry="30" fill="#3f8f4a"/><ellipse cx="${x - 8}" cy="${y - 14}" rx="14" ry="16" fill="#58a85f" opacity="0.7"/>`; });
+  } else {
+    const rich = tier >= 1;
+    const c0 = rich ? '#0a0f1e' : '#0d1222', c1 = rich ? '#33284a' : '#2a2a4a', c2 = rich ? '#c9805a' : '#7a4e5f';
+    b += `<defs><linearGradient id="${u}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c0}"/><stop offset="0.55" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
+      <rect width="400" height="400" fill="url(#${u}sky)"/>`;
+    for (let i = 0; i < 40; i++) b += `<circle cx="${(rnd() * 400).toFixed(0)}" cy="${(rnd() * 150).toFixed(0)}" r="${(rnd() * 0.9 + 0.3).toFixed(1)}" fill="#fff" opacity="${(rnd() * 0.6 + 0.2).toFixed(2)}"/>`;
+    [['#141a2c', 0.9, 130, 250], ['#0c101c', 1, 90, 190]].forEach(([fill, op, minH, maxH], layer) => {
+      let x = -10;
+      while (x < 410) {
+        const w = 28 + rnd() * 34, h = minH + rnd() * (maxH - minH), y = 400 - h;
+        b += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="${fill}" opacity="${op}"/>`;
+        if (layer === 1 && rnd() < 0.5) b += `<rect x="${(x + w / 2 - 1).toFixed(0)}" y="${(y - 18).toFixed(0)}" width="2" height="18" fill="${fill}"/>`;
+        const cols = Math.floor(w / 9), rows = Math.floor(h / 13);
+        for (let r = 1; r < rows; r++) for (let c = 0; c < cols; c++) {
+          if (rnd() < (layer === 1 ? 0.34 : 0.2)) b += `<rect x="${(x + 4 + c * 9).toFixed(0)}" y="${(y + 6 + r * 13).toFixed(0)}" width="4" height="6" fill="#ffd27a" opacity="${(rnd() * 0.6 + 0.3).toFixed(2)}"/>`;
+        }
+        x += w + 2 + rnd() * 4;
+      }
+    });
+    if (rich) b += `<rect x="7" y="7" width="386" height="386" fill="none" stroke="#2b2415" stroke-width="14"/><rect x="130" y="0" width="6" height="400" fill="#1a1710" opacity="0.9"/><rect x="266" y="0" width="6" height="400" fill="#1a1710" opacity="0.9"/>`;
+  }
+  b += `<rect width="400" height="400" fill="url(#${u}vg)"/></svg>`;
+  sceneCache[ck] = b;
+  return b;
+}
+
+const INTUITION = {
+  elem: ['아직은 힘이 없다. 하지만 미래를 아는 나에게 시간은 가장 큰 무기다.', '용돈을 모아 두자. 곧 엄청난 기회가 온다는 걸 나는 알고 있다.', '지금은 평범한 초등학생. 아무도 내가 회귀자인 줄 모른다.', '이번 생엔 절대로 놓치지 않는다. 그날이 올 때까지, 조용히.'],
+  mid: ['사춘기? 그런 건 이미 한 번 겪었다. 이번엔 공부와 돈에 집중하자.', '또래들은 모른다. 곧 세상이 어떻게 바뀔지.', '시드머니를 키울 방법을 찾아야 한다. 아직 성인이 아니니 더더욱.'],
+  high: ['입시도 중요하지만, 내게는 더 큰 판이 기다리고 있다.', '성인이 되는 날까지 준비하자. 그때부턴 진짜 게임이다.', '스무 살이 되면 모든 문이 열린다. 그 전에 실력을 쌓아야 한다.'],
+  univ: ['이제 어른이다. 레버리지도, 대출도 가능하다. 신중하게, 하지만 과감하게.', '2008년이 다가온다. 그날을 위해 준비해야 한다.', '캠퍼스의 낭만도 좋지만, 시장은 기다려주지 않는다.'],
+  work: ['시장은 반복된다. 나는 이미 그 흐름을 알고 있다.', '월급은 씨앗일 뿐. 진짜 승부는 타이밍에 있다.', '1조 클럽, 멀게만 보이지만 불가능하진 않다.', '욕심이 커질수록 청산도 가까워진다. 레버리지는 신중하게.']
+};
+
+function renderLife() {
+  const el = document.getElementById('life-screen');
+  if (!el) return;
+  const stg = getStage(), age = getAge();
+  const preset = characterPresets.find(x => x.id === state.player.charId) || characterPresets[0];
+  const nw = Math.floor(calculateNetWorth(state));
+  const assets = nw + state.debt;
+
+  document.getElementById('lfCash').innerText = fmtShort(state.cash);
+  document.getElementById('lfAssets').innerText = fmtShort(assets);
+  document.getElementById('lfDebt').innerText = state.debt > 0 ? fmtShort(state.debt) : '0';
+  document.getElementById('lfNet').innerText = fmtShort(nw);
+  document.getElementById('lfBell').style.display = state.achievements.length > (state.achSeen || 0) ? 'block' : 'none';
+
+  const d = state.lastDelta || 0;
+  const dEl = document.getElementById('lfDelta');
+  dEl.innerText = (d > 0 ? '+' : '') + fmtShort(d);
+  dEl.style.color = d > 0 ? 'var(--red)' : (d < 0 ? 'var(--blue)' : '#fff');
+  const t = (state.year - 1998) * 12 + (state.month - 1);
+  document.getElementById('lfElapsed').innerText = t >= 12 ? `${Math.floor(t / 12)}년 ${t % 12}개월` : `${t}개월`;
+  document.getElementById('lfGoal').innerText = nw >= 1e12 ? '달성!' : fmtShort(1e12 - nw);
+  document.getElementById('lfAch').innerText = `${state.achievements.length} / ${achievementData.length}`;
+
+  document.getElementById('lfDate').innerText = `${state.year}년 ${state.month}월`;
+  document.getElementById('lfStageChip').innerText = `${age}세 · ${stg.allowance ? stg.name : jobs[state.jobLevel].name} ›`;
+
+  // 배경 / 캐릭터 (변경될 때만 다시 그림)
+  const tier = (stg.id === 'work' && nw >= 1e10) ? 1 : 0;
+  const bgKey = stg.scene + tier;
+  const bgEl = document.getElementById('lifeBg');
+  if (bgEl.dataset.k !== bgKey) { bgEl.innerHTML = sceneSVG(stg.scene, tier, 'l'); bgEl.dataset.k = bgKey; }
+  const figKey = `${preset.id}|${state.player.gender}|${stg.id}`;
+  const figEl = document.getElementById('lfFigure');
+  if (figEl.dataset.k !== figKey) {
+    const first = !figEl.dataset.k;
+    figEl.innerHTML = getHeroAvatarSVG(lifeLook(preset, stg), state.player.gender, 'l');
+    figEl.dataset.k = figKey;
+    figEl.style.setProperty('--sc', stg.scale);
+    if (!first) { figEl.classList.remove('pop'); void figEl.offsetWidth; figEl.classList.add('pop'); }
+  }
+  document.getElementById('lifeGlow').style.background = preset.clothes;
+
+  // 보유 자산 칩
+  const chips = [];
+  if (state.realEstates.length > 0) {
+    const r = realEstateData.find(x => x.id === state.realEstates[0]);
+    chips.push(`🏠 ${r ? r.name : '부동산'}${state.realEstates.length > 1 ? ` 외 ${state.realEstates.length - 1}` : ''}`);
+  }
+  if (state.ventures.length > 0) chips.push(`🚀 벤처 ${state.ventures.length}곳`);
+  if (state.flexItems.length > 0) {
+    const f = flexData.find(x => x.id === state.flexItems[state.flexItems.length - 1]);
+    chips.push(`✨ ${f ? f.name : '플렉스'}`);
+  }
+  const holdCnt = Object.keys(state.stocks).filter(k => state.stocks[k] && state.stocks[k].qty > 0).length;
+  if (holdCnt > 0) chips.push(`📈 보유 종목 ${holdCnt}개`);
+  document.getElementById('lfAssetChips').innerHTML = chips.slice(0, 3).map(c => `<span>${c}</span>`).join('');
+
+  // 뉴스 / 직감
+  const key = `${state.year}-${state.month}`;
+  if (historicalEvents[key]) state.lastNews = { key, text: historicalEvents[key] };
+  const news = state.lastNews || { key: '1998-1', text: historicalEvents['1998-1'] };
+  const [ny, nm] = news.key.split('-');
+  document.getElementById('lfNewsDate').innerText = `회귀일보 · ${ny}.${String(nm).padStart(2, '0')}`;
+  document.getElementById('lfNewsTag').innerText = news.key === key ? '속보' : '지난 소식';
+  document.getElementById('lfHeadline').innerText = news.text;
+  let hm = state.month + 2, hy = state.year;
+  if (hm > 12) { hm -= 12; hy++; }
+  const hintMsg = historicalEvents[`${hy}-${hm}`];
+  const arr = INTUITION[stg.id];
+  document.getElementById('lfIntuition').innerHTML = (statEff().hint && hintMsg)
+    ? `<b>📡 지능 힌트</b> — 2개월 뒤: ${hintMsg}`
+    : `<b>회귀자의 직감</b> — ${arr[(state.year * 12 + state.month) % arr.length]}`;
+
+  // 능력치 타일
+  const s = state.player.stats;
+  const tiles = [['int', '지능', s.int], ['charm', '매력', s.charm], ['sta', '체력', s.sta], ['net', '인맥', s.net], ['act', '추진력', s.act], ['stress', '스트레스', state.stress]];
+  const colors = Object.assign({}, STAT_COLORS, { stress: '#ff6b5a' });
+  document.getElementById('lfTiles').innerHTML = tiles.map(([k, l, v]) => `
+    <div class="stat-tile" onclick="showStatInfo('${k}')">
+      <div class="num" style="color:${colors[k]};">${v}</div>
+      <div class="lbl">${l}</div>
+      <div class="bar"><i style="width:${Math.min(100, v)}%; background:${colors[k]};"></i></div>
+    </div>`).join('');
+
+  // 행동력
+  const maxAP = getMaxAP();
+  document.getElementById('apFill').style.width = Math.min(100, state.ap / maxAP * 100) + '%';
+  document.getElementById('apText').innerText = `${state.ap}/${maxAP}`;
+  document.getElementById('apSta').innerText = `· 체력 ${s.sta}`;
+  document.getElementById('actGrid').innerHTML = LIFE_ACTIONS.filter(a => age >= a.minAge).map(a =>
+    `<button class="act-btn ${state.ap <= 0 ? 'off' : ''}" onclick="doLifeAction('${a.id}')"><span class="ai">${a.icon}</span>${a.label(stg)}</button>`).join('');
+
+  document.getElementById('lfInvestVal').innerText = fmtShort(assets);
 }
 
 /* ==================== 9. UI 렌더링 ==================== */
@@ -2346,12 +2882,12 @@ function renderAll() {
   const preset = characterPresets.find(x => x.id === state.player.charId) || characterPresets[0];
   document.getElementById('hudAvatar').innerHTML = getAvatarSVG(preset, state.player.gender);
   document.getElementById('hudPlayerName').innerText = `${state.player.name} (${preset.name})`;
-  document.getElementById('hudDate').innerText = `${state.year}년 ${state.month}월`;
-  document.getElementById('hudJob').innerText = `${jobs[state.jobLevel].name}`;
+  document.getElementById('hudDate').innerText = `${state.year}년 ${state.month}월 (${getAge()}세)`;
+  document.getElementById('hudJob').innerText = getStage().allowance ? getStage().name : `${jobs[state.jobLevel].name}`;
 
   const st = state.player.stats;
   document.getElementById('summaryStats').innerText =
-    `[능력치] 지능 ${st.int} | 매력 ${st.charm} | 체력 ${st.sta} | 인맥 ${st.net} | 행동력 ${st.act}`;
+    `[능력치] 지능 ${st.int} | 매력 ${st.charm} | 체력 ${st.sta} | 인맥 ${st.net} | 추진력 ${st.act}`;
 
   let stockValue = 0;
   for (let id in state.stocks) {
@@ -2524,6 +3060,9 @@ function renderAll() {
       <button class="btn btn-dark btn-sm" style="margin-top:6px;" onclick="upgradeJob()">승진 시험/이직하기</button>` : '최고 직급에 도달했습니다!'}
     </div>
   `;
+  if (getStage().allowance) {
+    jobHtml = `<div style="font-size:13px; line-height:1.7;">현재: <b>${getStage().name}</b> (${getAge()}세)<br>월 용돈: <b>${fmt(getMonthlySalary())}</b><br><span style="color:var(--text-muted);">23세부터 직장인이 되어 월급을 받고 승진할 수 있습니다.</span></div>`;
+  }
   document.getElementById('jobList').innerHTML = jobHtml;
 
   let flexHtml = '';
@@ -2549,6 +3088,7 @@ function renderAll() {
   renderAchievements();
   renderNetChart();
   renderEffects();
+  renderLife();
 }
 
 function switchTab(tabId) {
