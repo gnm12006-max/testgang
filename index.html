@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0e14">
   <link rel="manifest" href="manifest.json">
-  <title>나 혼자만 상한가 v8 - 인생회귀 게임</title>
+  <title>나 혼자만 상한가 v9 - 인생회귀 게임</title>
   <style>
     :root {
       --bg: #0b0e14;
@@ -522,7 +522,7 @@
     .act-btn .ai { font-size: 23px; }
     .act-btn:active { transform: translateY(1px); background: #1d2535; }
     .act-btn.off { opacity: 0.4; }
-    .life-bottom { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; padding: 8px 12px calc(16px + env(safe-area-inset-bottom)); margin-top: auto; }
+    .life-bottom { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; padding: 8px 12px 4px; touch-action: pan-x; margin-top: auto; }
     .invest-btn { background: #141a26; border: 1px solid var(--border); border-radius: 14px; color: #fff; padding: 12px 14px; text-align: left; cursor: pointer; }
     .next-btn { background: linear-gradient(180deg, #f7cf6a 0%, #e0a21f 100%); border: none; border-radius: 14px; color: #1a1405; font-size: 19px; font-weight: 900; cursor: pointer; box-shadow: 0 8px 22px rgba(242,185,56,0.3), inset 0 1px 0 rgba(255,255,255,0.45); }
     .next-btn:active { transform: translateY(1px); }
@@ -535,10 +535,10 @@
     #invest-sheet .date-badge { font-size: 11px; padding: 4px 6px; }
 
     /* ===== v8. 투자·대출 바텀시트 ===== */
-    #inv-dim { position: fixed; inset: 0; background: rgba(0,0,0,0.58); z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
-    #inv-dim.show { opacity: 1; pointer-events: auto; }
-    #inv-panel { position: fixed; left: max(0px, calc(50% - 240px)); width: min(100%, 480px); top: 160px; bottom: 0; z-index: 160; background: #10141c; border: 1px solid #222b3b; border-bottom: none; border-radius: 22px 22px 0 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 0 14px calc(32px + env(safe-area-inset-bottom)); transform: translateY(112%); transition: transform 0.26s ease; pointer-events: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
-    #inv-panel.show { transform: none; pointer-events: auto; }
+    #inv-dim, #biz-dim { position: fixed; inset: 0; background: rgba(0,0,0,0.58); z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
+    #inv-dim.show, #biz-dim.show { opacity: 1; pointer-events: auto; }
+    #inv-panel, #biz-panel { position: fixed; left: max(0px, calc(50% - 240px)); width: min(100%, 480px); top: 160px; bottom: 0; z-index: 160; background: #10141c; border: 1px solid #222b3b; border-bottom: none; border-radius: 22px 22px 0 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 0 14px calc(32px + env(safe-area-inset-bottom)); transform: translateY(112%); transition: transform 0.26s ease; pointer-events: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+    #inv-panel.show, #biz-panel.show { transform: none; pointer-events: auto; }
     .inv-sticky { position: sticky; top: 0; z-index: 5; background: #10141c; margin: 0 -14px; padding: 0 14px 10px; touch-action: none; }
     .inv-grab { width: 44px; height: 5px; border-radius: 3px; background: #2d3647; margin: 0 auto; position: relative; top: 8px; }
     .inv-head { display: flex; align-items: center; gap: 6px; padding-top: 20px; }
@@ -596,6 +596,29 @@
     .it-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 10px; }
     .it-actions button { padding: 14px 0; border-radius: 12px; border: none; font-size: 16px; font-weight: 900; cursor: pointer; }
 
+    /* ===== v9. 창업 ===== */
+    .biz-hint { text-align: center; color: var(--text-muted); font-size: 12px; font-weight: 700; padding: 4px 0 calc(12px + env(safe-area-inset-bottom)); touch-action: pan-x; cursor: pointer; }
+    .biz-hint i { display: block; width: 40px; height: 4px; border-radius: 2px; background: #2d3647; margin: 0 auto 6px; }
+    .biz-card { background: #141a26; border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-top: 12px; }
+    .biz-card.mine { border-color: #6b5216; background: #19160f; }
+    .biz-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .biz-nm { font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .biz-nm .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .biz-lv { font-size: 13px; font-weight: 900; color: #1a1405; background: var(--accent); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+    .biz-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.55; }
+    .biz-pips { display: flex; gap: 5px; margin-top: 10px; }
+    .biz-pips i { flex: 1; height: 7px; border-radius: 4px; background: #262e3f; }
+    .biz-pips i.on { background: linear-gradient(90deg, #c9921f, #f7cf6a); }
+    .biz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; text-align: center; background: #10141c; border-radius: 12px; padding: 10px 2px; }
+    .biz-stats .l { font-size: 11.5px; color: var(--text-muted); }
+    .biz-stats .v { font-size: 15px; font-weight: 800; margin-top: 3px; white-space: nowrap; }
+    .biz-era { font-size: 12px; font-weight: 700; margin-top: 8px; }
+    .biz-btns { display: grid; grid-template-columns: 1.6fr 1fr; gap: 8px; margin-top: 12px; }
+    .biz-btn { padding: 13px 4px; border-radius: 12px; border: 1px solid var(--border); background: #1a2130; color: #fff; font-size: 14.5px; font-weight: 800; cursor: pointer; }
+    .biz-btn.gold { background: linear-gradient(180deg, #f7cf6a 0%, #e0a21f 100%); color: #1a1405; border: none; }
+    .biz-btn.off { opacity: 0.45; }
+    .biz-btn:active { opacity: 0.7; }
+
 
     /* ===== 시작 화면 리뉴얼 (히어로 스타일) ===== */
     #start-screen { padding: calc(env(safe-area-inset-top, 0px) + 18px) 14px 36px; background: radial-gradient(circle at 50% 0%, rgba(242,185,56,0.10), rgba(11,14,20,0) 55%), linear-gradient(180deg, #0f1420 0%, #0b0e14 100%); }
@@ -651,7 +674,7 @@
   <div id="start-screen">
     <div class="hero-head">
       <div class="intro-sub">진짜로 대박나는 인생회귀 게임</div>
-      <h1 class="intro-title">나 혼자만 <span>상한가 v8</span></h1>
+      <h1 class="intro-title">나 혼자만 <span>상한가 v9</span></h1>
     </div>
 
     <div id="continue-box">
@@ -765,6 +788,7 @@
         </button>
         <button class="next-btn" onclick="nextTurn()">다음 달 ▶</button>
       </div>
+      <div class="biz-hint" onclick="openBiz()"><i></i>⌃ 위로 밀어 올려 창업 · 경영</div>
     </div>
 
     <!-- ===== 투자·대출 시트 (기존 탭 화면) ===== -->
@@ -809,6 +833,7 @@
           <div>📈 주식 평가금: <b id="summaryStock">0원</b></div>
           <div>⚡ 선물 포지션 가치: <b id="summaryFutures">0원</b> (미실현손익: <span id="summaryPnl">0원</span>)</div>
           <div>🏢 부동산/벤처 자산: <b id="summaryRealEstate">0원</b></div>
+          <div>🏭 보유 회사 가치: <b id="summaryBiz">0원</b></div>
           <div>💸 월 고정 수입(월급+배당+월세): <b id="summaryIncome" style="color:var(--green);">80만 원</b></div>
           <div>🧾 올해 과세 대상 이익: <b id="summaryTax">0원</b> <span style="font-size:11px;color:var(--text-muted);">(12월 정산)</span></div>
         </div>
@@ -903,6 +928,22 @@
     </nav>
     </div>
   </div>
+</div>
+
+<div id="biz-dim" onclick="closeBiz()"></div>
+<div id="biz-panel">
+  <div class="inv-sticky" id="bizSticky">
+    <div class="inv-grab"></div>
+    <div class="inv-head">
+      <div class="inv-title">창업 · 경영</div>
+      <button class="inv-hb" onclick="bizGuide()">📖 안내</button>
+      <button class="inv-hb" onclick="openInvest()">📈 투자</button>
+      <button class="inv-hb" onclick="closeBiz()">닫기</button>
+    </div>
+  </div>
+  <div class="inv-sum" id="bizSum"></div>
+  <div class="inv-note" id="bizNote"></div>
+  <div id="bizBody"></div>
 </div>
 
 <div id="inv-dim" onclick="closeInvest()"></div>
@@ -1464,6 +1505,7 @@ function enterGameScreen() {
   document.getElementById('game-screen').style.display = 'block';
   closeSheet(true);
   closeInvest();
+  closeBiz();
   selectStock('SAMSUNG');
   renderAll();
   renderSaveSlots();
@@ -1472,6 +1514,7 @@ function enterGameScreen() {
 function goToTitleScreen() {
   closeSheet(true);
   closeInvest();
+  closeBiz();
   checkExistingAutoSave();
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('start-screen').style.display = 'flex';
@@ -1561,7 +1604,7 @@ function calculateNetWorth(st) {
     let ret = (pos.type === 'LONG') ? (ratio * pos.leverage) : (-ratio * pos.leverage);
     futuresVal += Math.max(0, pos.margin * (1 + ret));
   });
-  return st.cash + stockValue + futuresVal + getRealEstateValue(st) - (st.debt || 0);
+  return st.cash + stockValue + futuresVal + getRealEstateValue(st) + getCompanyValue(st) - (st.debt || 0);
 }
 
 function renderSaveSlots() {
@@ -1830,6 +1873,7 @@ function nextTurn() {
   }
 
   state.cash += (income + dividendSum + rentSum);
+  const bizNet = processCompanies();
   checkFuturesLiquidation();
 
   if (state.cash < 0 && state.debt > 0) {
@@ -1865,6 +1909,7 @@ ${vItem.name} 지분이 상장되어 +${fmt(reward)} 회수 완료!`);
 
   saveGameToStorage(AUTO_SAVE_KEY, false);
   renderAll();
+  if ((state.companies || []).length) showToast(`🏭 회사 이번 달 순익 ${bizNet >= 0 ? '+' : ''}${fmt(bizNet)}`);
   maybeTriggerEvent();
 }
 
@@ -2569,6 +2614,7 @@ function ensureStateDefaults() {
   if (state.ap == null) state.ap = getMaxAP();
   if (!Array.isArray(state.favs)) state.favs = [];
   if (!state.notes) state.notes = {};
+  if (!Array.isArray(state.companies)) state.companies = [];
 }
 
 
@@ -2703,6 +2749,7 @@ function openSheet(tab) {
     return;
   }
   closeInvest();
+  closeBiz();
   const sh = document.getElementById('invest-sheet');
   sh.classList.add('show');
   if (tab === 'home') state.achSeen = state.achievements.length;
@@ -2896,6 +2943,7 @@ function renderLife() {
     chips.push(`🏠 ${r ? r.name : '부동산'}${state.realEstates.length > 1 ? ` 외 ${state.realEstates.length - 1}` : ''}`);
   }
   if (state.ventures.length > 0) chips.push(`🚀 벤처 ${state.ventures.length}곳`);
+  if ((state.companies || []).length > 0) chips.push(`🏭 내 회사 ${state.companies.length}곳`);
   if (state.flexItems.length > 0) {
     const f = flexData.find(x => x.id === state.flexItems[state.flexItems.length - 1]);
     chips.push(`✨ ${f ? f.name : '플렉스'}`);
@@ -2975,7 +3023,7 @@ function renderAll() {
 
   let realEstateValue = getRealEstateValue(state);
 
-  const netWorth = state.cash + stockValue + futuresCurrentValSum + realEstateValue - state.debt;
+  const netWorth = state.cash + stockValue + futuresCurrentValSum + realEstateValue + getCompanyValue(state) - state.debt;
 
   document.getElementById('hudNetWorth').innerText = `순자산: ${fmt(netWorth)}`;
   document.getElementById('hudCash').innerText = fmt(state.cash);
@@ -2986,6 +3034,7 @@ function renderAll() {
   const pnl = futuresCurrentValSum - futuresMarginSum;
   document.getElementById('summaryPnl').innerHTML = `<span class="${pnl >= 0 ? 'up' : 'down'}">${pnl >= 0 ? '+' : ''}${fmt(pnl)}</span>`;
   document.getElementById('summaryRealEstate').innerText = fmt(realEstateValue);
+  document.getElementById('summaryBiz').innerText = fmt(getCompanyValue(state));
 
   document.getElementById('loanStatusText').innerText = fmt(state.debt);
   document.getElementById('loanInterestText').innerText = fmt(Math.floor(state.debt * 0.015)) + " /월";
@@ -3130,6 +3179,7 @@ function renderAll() {
   renderNetChart();
   renderEffects();
   renderLife();
+  renderBiz();
 }
 
 function switchTab(tabId) {
@@ -3173,10 +3223,12 @@ function placeInvPanel() {
   let top = chips ? Math.round(chips.getBoundingClientRect().bottom) : 160;
   top = Math.max(60, Math.min(top, Math.round(window.innerHeight * 0.5)));
   document.getElementById('inv-panel').style.top = top + 'px';
+  document.getElementById('biz-panel').style.top = top + 'px';
 }
 
 function openInvest(cat) {
   closeSheet(true);
+  closeBiz();
   window.scrollTo(0, 0);
   if (cat) invCat = cat;
   invOpen = true;
@@ -3196,11 +3248,11 @@ function closeInvest() {
   document.getElementById('inv-panel').classList.remove('show');
 }
 
-window.addEventListener('resize', () => { if (invOpen) placeInvPanel(); });
+window.addEventListener('resize', () => { if (invOpen || bizOpen) placeInvPanel(); });
 
-(function initInvSwipe() {
-  const panel = document.getElementById('inv-panel');
-  const el = document.getElementById('invSticky');
+function initPanelSwipe(panelId, stickyId, closeFn) {
+  const panel = document.getElementById(panelId);
+  const el = document.getElementById(stickyId);
   let sy = null, dy = 0;
   el.addEventListener('touchstart', e => { sy = e.touches[0].clientY; dy = 0; panel.style.transition = 'none'; }, { passive: true });
   el.addEventListener('touchmove', e => {
@@ -3214,11 +3266,13 @@ window.addEventListener('resize', () => { if (invOpen) placeInvPanel(); });
     panel.style.transform = '';
     const far = dy > 90;
     sy = null; dy = 0;
-    if (far) closeInvest();
+    if (far) closeFn();
   };
   el.addEventListener('touchend', end);
   el.addEventListener('touchcancel', end);
-})();
+}
+initPanelSwipe('inv-panel', 'invSticky', () => closeInvest());
+initPanelSwipe('biz-panel', 'bizSticky', () => closeBiz());
 
 function invSetCat(id) {
   invCat = id;
@@ -3359,6 +3413,7 @@ function renderInvest() {
     html += held.length ? held.map(invStockRow).join('') : `<div class="inv-empty">보유 중인 주식이 없습니다.</div>`;
     if (state.positions.length) html += `<div class="inv-sec">⚡ 선물 포지션<b>${state.positions.length}</b></div>` + invGoRow('오픈 포지션 보기·청산', `${state.positions.length}개 보유 중`, 'futures');
     if (state.realEstates.length) html += `<div class="inv-sec">🏢 부동산<b>${state.realEstates.length}</b></div>` + state.realEstates.map(id => { const r = realEstateData.find(x => x.id === id); return r ? invGoRow(r.name, '월세 ' + fmt(Math.floor(r.rent * (state.reIndex || 1))), 'realestate') : ''; }).join('');
+    if ((state.companies || []).length) html += `<div class="inv-sec">🏭 내 회사<b>${state.companies.length}</b></div>` + state.companies.map(c => { const f = BIZ_FIELDS.find(x => x.id === c.id); return f ? `<div class="inv-row"><div class="inv-r1"><div class="inv-nm"><span class="n">${f.icon} ${escHtml(c.name)}</span></div><button class="inv-go" onclick="openBiz()">경영 ›</button></div><div class="inv-r2">Lv.${c.level} · 기업가치 ${fmt(bizValue(f, c, state))}</div></div>` : ''; }).join('');
     if (state.ventures.length) html += `<div class="inv-sec">🚀 벤처<b>${state.ventures.length}</b></div>` + state.ventures.map(v => { const d = ventureData.find(x => x.id === v.id); return d ? invGoRow(d.name, '상장 대기 중', 'venture') : ''; }).join('');
     if (debt > 0) html += `<div class="inv-sec">🏦 대출<b style="color:var(--red);">${fmt(debt)}</b></div>` + invGoRow('상환하러 가기', `월 이자 ${fmt(Math.floor(debt * 0.015))}`, 'loan');
   } else if (invCat === 'fav') {
@@ -3432,6 +3487,232 @@ function invTradeConfirm() {
     showToast(`${c.isBuy ? '🔴 매수' : '🔵 매도'} 완료: ${getStock(c.id).name} ${qty}주`);
   }
 }
+
+/* ==================== v9. 창업 · 경영 ==================== */
+const BIZ_LEVEL_MULT = [1, 1.9, 3.5, 6, 10];
+const BIZ_LEVEL_NAME = ['동네 가게', '중소기업', '중견기업', '대기업', '글로벌 기업'];
+const BIZ_FIELDS = [
+  { id: 'FOOD', icon: '🍗', name: '치킨집·외식업', desc: '동네 상권 장사. 안정적이지만 성장은 느립니다.', cost: 20000000, rate: 0.025, risk: 0.06, pe: 6, minYear: 1998, boom: [[1998, 1998, 0.7], [2020, 2021, 0.6]] },
+  { id: 'CAFE', icon: '☕', name: '카페·프랜차이즈', desc: '커피 문화 열풍을 타면 가맹점이 쑥쑥 늘어납니다.', cost: 35000000, rate: 0.025, risk: 0.08, pe: 7, minYear: 1998, boom: [[2005, 2012, 1.3], [2020, 2021, 0.7]] },
+  { id: 'WEB', icon: '🌐', name: '인터넷·IT 기업', desc: '닷컴 버블과 모바일 시대. 시기를 타면 폭발합니다.', cost: 60000000, rate: 0.03, risk: 0.15, pe: 10, minYear: 1998, boom: [[1999, 2000, 1.7], [2001, 2003, 0.5], [2010, 2100, 1.3]] },
+  { id: 'GAME', icon: '🎮', name: '게임 개발사', desc: '히트작 하나가 회사를 바꿉니다. 대신 흥행 리스크가 큽니다.', cost: 120000000, rate: 0.03, risk: 0.2, pe: 10, minYear: 1998, boom: [[1999, 2005, 1.3], [2010, 2100, 1.4]] },
+  { id: 'ENT', icon: '🎤', name: '엔터테인먼트', desc: '아이돌과 콘텐츠. 한류가 오면 세계로 뻗습니다.', cost: 300000000, rate: 0.03, risk: 0.22, pe: 12, minYear: 1998, boom: [[2012, 2100, 1.4]] },
+  { id: 'BIO', icon: '💊', name: '바이오·제약', desc: '신약 하나면 대박. 오랜 기다림과 높은 위험이 따릅니다.', cost: 500000000, rate: 0.028, risk: 0.25, pe: 14, minYear: 1998, boom: [[2015, 2021, 1.4], [2022, 2023, 0.8]] },
+  { id: 'FACT', icon: '🏭', name: '제조·부품 공장', desc: '꾸준한 수출 주문. 경기 침체에는 흔들립니다.', cost: 800000000, rate: 0.022, risk: 0.1, pe: 8, minYear: 1998, boom: [[2008, 2009, 0.6], [2021, 2100, 1.2]] },
+  { id: 'FIN', icon: '💳', name: '핀테크', desc: '간편결제·송금 서비스. 스마트폰 시대에 열립니다.', cost: 1500000000, rate: 0.028, risk: 0.16, pe: 12, minYear: 2010, boom: [[2020, 2021, 1.4], [2022, 2023, 0.7]] },
+  { id: 'BUILD', icon: '🏗️', name: '건설·부동산 개발', desc: '부동산 시장 흐름을 그대로 탑니다.', cost: 2000000000, rate: 0.02, risk: 0.12, pe: 8, minYear: 1998, boom: [[2008, 2009, 0.5], [2021, 2021, 1.3]] },
+  { id: 'AI', icon: '🤖', name: 'AI 연구소', desc: '생성형 AI 시대의 주역. 때를 만나면 끝이 없습니다.', cost: 5000000000, rate: 0.03, risk: 0.2, pe: 16, minYear: 2016, boom: [[2023, 2100, 2.2]] }
+];
+let bizOpen = false;
+
+function bizEra(f, st) {
+  let m = 1;
+  (f.boom || []).forEach(([a, b, x]) => { if (st.year >= a && st.year <= b) m *= x; });
+  if (f.id === 'BUILD') m *= Math.max(0.5, Math.min(2, st.reIndex || 1));
+  return m;
+}
+function bizBase(f, c, st) { return f.cost * f.rate * BIZ_LEVEL_MULT[c.level - 1] * bizEra(f, st); }
+function bizValue(f, c, st) { return Math.floor(Math.max(c.invested * 0.7, bizBase(f, c, st) * 12 * f.pe)); }
+function bizUpgradeCost(f, c) { return Math.floor(f.cost * 0.7 * c.level); }
+function getCompanyValue(st) {
+  let sum = 0;
+  (st.companies || []).forEach(c => { const f = BIZ_FIELDS.find(x => x.id === c.id); if (f) sum += bizValue(f, c, st); });
+  return sum;
+}
+
+function processCompanies() {
+  let total = 0;
+  const stt = state.player.stats;
+  const bonus = Math.min(0.3, Math.max(0, (stt.int + stt.act - 10) * 0.004));
+  const mk = Math.max(0.6, Math.min(1.4, 1 + marketTrend(state.year, state.month) * 4));
+  (state.companies || []).forEach(c => {
+    const f = BIZ_FIELDS.find(x => x.id === c.id);
+    if (!f) return;
+    const base = bizBase(f, c, state) * mk * (1 + bonus);
+    let p = base * (0.75 + Math.random() * 0.6);
+    if (Math.random() < f.risk) p = -base * 0.6;
+    p = Math.floor(p);
+    if (p < 0) p = -Math.min(-p, Math.max(0, state.cash));
+    c.last = p;
+    c.total = (c.total || 0) + p;
+    state.cash += p;
+    state.taxBase += p;
+    total += p;
+  });
+  return total;
+}
+
+
+function openBiz() {
+  closeInvest();
+  closeSheet(true);
+  window.scrollTo(0, 0);
+  bizOpen = true;
+  placeInvPanel();
+  document.body.style.overflow = 'hidden';
+  document.getElementById('biz-dim').classList.add('show');
+  document.getElementById('biz-panel').classList.add('show');
+  renderBiz();
+  document.getElementById('biz-panel').scrollTop = 0;
+}
+function closeBiz() {
+  bizOpen = false;
+  if (!invOpen) document.body.style.overflow = '';
+  document.getElementById('biz-dim').classList.remove('show');
+  document.getElementById('biz-panel').classList.remove('show');
+}
+
+function bizGuide() {
+  showInfo('📖 창업 안내', [
+    '<b>창업</b> — 만 19세부터 가능. 창업 비용은 현금에서 바로 나갑니다 (분야당 회사 1개).',
+    '<b>월 순익</b> — 매달 자동으로 현금에 들어옵니다. 가끔 적자 달도 있으니 주의하세요.',
+    '<b>성장</b> — 비용을 들여 Lv.5까지 키우면 순익이 최대 10배가 됩니다.',
+    '<b>시대 흐름</b> — 분야마다 호황·불황 시기가 있습니다. 지능·추진력이 높으면 순익이 늘어납니다.',
+    '<b>기업가치</b> — 순자산에 포함됩니다. <b>매각</b>하면 기업가치의 90%를 현금으로 받습니다.',
+    '<b>세금</b> — 회사 순익은 12월 연말 정산 때 과세됩니다.'
+  ].join('<br><br>'));
+}
+
+function bizFound(id) {
+  const f = BIZ_FIELDS.find(x => x.id === id);
+  if (getAge() < 19) { alert('창업은 만 19세(성인)부터 가능합니다.'); return; }
+  if (f.minYear && state.year < f.minYear) { alert(`${f.minYear}년부터 창업할 수 있는 분야입니다.`); return; }
+  if (state.companies.some(c => c.id === id)) return;
+  if (state.cash < f.cost) { alert(`창업 자금이 부족합니다! (${fmt(f.cost)} 필요)`); return; }
+  let name = prompt(`${f.icon} 회사 이름을 정해주세요`, f.name.split('·')[0]);
+  if (name === null) return;
+  name = (name.trim() || f.name).slice(0, 14);
+  state.cash -= f.cost;
+  state.companies.push({ id, name, level: 1, invested: f.cost, total: 0, last: 0, since: { y: state.year, m: state.month } });
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`🎉 ${name} 창업 완료!`);
+  renderAll();
+}
+function bizUpgrade(id) {
+  const c = state.companies.find(x => x.id === id);
+  const f = BIZ_FIELDS.find(x => x.id === id);
+  if (!c || c.level >= 5) return;
+  const cost = bizUpgradeCost(f, c);
+  if (state.cash < cost) { alert(`성장 자금이 부족합니다! (${fmt(cost)} 필요)`); return; }
+  state.cash -= cost;
+  c.invested += cost;
+  c.level++;
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`🚀 ${c.name} → ${BIZ_LEVEL_NAME[c.level - 1]} (Lv.${c.level})`);
+  renderAll();
+}
+function bizSell(id) {
+  const c = state.companies.find(x => x.id === id);
+  const f = BIZ_FIELDS.find(x => x.id === id);
+  if (!c) return;
+  const proceeds = Math.floor(bizValue(f, c, state) * 0.9);
+  if (!confirm(`${c.name}을(를) ${fmt(proceeds)}에 매각할까요?\n(기업가치의 90%)`)) return;
+  state.cash += proceeds;
+  state.taxBase += proceeds - c.invested;
+  state.companies = state.companies.filter(x => x.id !== id);
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  showToast(`💰 ${c.name} 매각 +${fmt(proceeds)}`);
+  renderAll();
+}
+function bizRename(id) {
+  const c = state.companies.find(x => x.id === id);
+  if (!c) return;
+  const v = prompt('회사 이름 변경', c.name);
+  if (v === null) return;
+  c.name = (v.trim() || c.name).slice(0, 14);
+  saveGameToStorage(AUTO_SAVE_KEY, false);
+  renderBiz();
+}
+
+function renderBiz() {
+  if (!bizOpen) return;
+  const list = state.companies || [];
+  let val = 0, last = 0, tot = 0;
+  list.forEach(c => { const f = BIZ_FIELDS.find(x => x.id === c.id); if (f) val += bizValue(f, c, state); last += c.last || 0; tot += c.total || 0; });
+  const col = n => n > 0 ? 'var(--red)' : (n < 0 ? 'var(--blue)' : '#fff');
+  document.getElementById('bizSum').innerHTML = `
+    <div><div class="l">내 회사</div><div class="v">${list.length}곳</div></div>
+    <div><div class="l">기업가치</div><div class="v" style="color:var(--accent);">${fmtShort(val)}</div></div>
+    <div><div class="l">지난달 순익</div><div class="v" style="color:${col(last)};">${last > 0 ? '+' : ''}${fmtShort(last)}</div></div>
+    <div><div class="l">누적 순익</div><div class="v" style="color:${col(tot)};">${tot > 0 ? '+' : ''}${fmtShort(tot)}</div></div>`;
+  const age = getAge();
+  document.getElementById('bizNote').innerHTML = age < 19
+    ? `🔒 창업은 만 19세부터 할 수 있습니다. (현재 ${age}세) 미리 분야를 살펴보세요.`
+    : '창업 비용은 현금에서 바로 나가고, 회사는 매달 순익을 냅니다. 성장시킬수록 커지며 기업가치는 순자산에 포함됩니다. (가상 시나리오)';
+
+  const eraTxt = (f) => {
+    const m = bizEra(f, state);
+    if (f.id === 'BUILD') return '';
+    return m > 1.05 ? `<div class="biz-era up">🔥 지금은 호황 ×${m.toFixed(1)}</div>` : (m < 0.95 ? `<div class="biz-era down">❄️ 지금은 불황 ×${m.toFixed(1)}</div>` : '');
+  };
+  const riskTxt = r => r <= 0.1 ? '안정' : (r <= 0.18 ? '보통' : '고위험');
+  let html = '';
+  const mine = BIZ_FIELDS.filter(f => list.some(c => c.id === f.id));
+  const rest = BIZ_FIELDS.filter(f => !list.some(c => c.id === f.id));
+  if (mine.length) html += `<div class="inv-sec">🏢 내 회사<b>${mine.length}</b></div>`;
+  mine.forEach(f => {
+    const c = list.find(x => x.id === f.id);
+    const v = bizValue(f, c, state);
+    const up = c.level < 5 ? bizUpgradeCost(f, c) : 0;
+    const pips = [1, 2, 3, 4, 5].map(i => `<i class="${i <= c.level ? 'on' : ''}"></i>`).join('');
+    html += `
+    <div class="biz-card mine">
+      <div class="biz-top">
+        <div class="biz-nm"><span>${f.icon}</span><span class="n">${escHtml(c.name)}</span><button class="inv-ic" onclick="bizRename('${f.id}')">✏️</button></div>
+        <div class="biz-lv">Lv.${c.level}</div>
+      </div>
+      <div class="biz-sub">${f.name} · ${BIZ_LEVEL_NAME[c.level - 1]} · ${c.since.y}.${String(c.since.m).padStart(2, '0')} 창업</div>
+      <div class="biz-pips">${pips}</div>
+      <div class="biz-stats">
+        <div><div class="l">기업가치</div><div class="v" style="color:var(--accent);">${fmtShort(v)}</div></div>
+        <div><div class="l">지난달 순익</div><div class="v" style="color:${col(c.last || 0)};">${(c.last || 0) > 0 ? '+' : ''}${fmtShort(c.last || 0)}</div></div>
+        <div><div class="l">누적 순익</div><div class="v" style="color:${col(c.total || 0)};">${(c.total || 0) > 0 ? '+' : ''}${fmtShort(c.total || 0)}</div></div>
+      </div>
+      ${eraTxt(f)}
+      <div class="biz-btns">
+        ${c.level < 5
+          ? `<button class="biz-btn gold ${state.cash >= up ? '' : 'off'}" onclick="bizUpgrade('${f.id}')">⬆ 성장시키기 · ${fmtShort(up)}</button>`
+          : `<button class="biz-btn off" disabled>👑 최고 단계</button>`}
+        <button class="biz-btn" onclick="bizSell('${f.id}')">매각 ${fmtShort(Math.floor(v * 0.9))}</button>
+      </div>
+    </div>`;
+  });
+  if (rest.length) html += `<div class="inv-sec">🌱 창업 가능 분야<b>${rest.length}</b></div>`;
+  rest.forEach(f => {
+    const lockedYear = f.minYear && state.year < f.minYear;
+    const can = age >= 19 && !lockedYear && state.cash >= f.cost;
+    const label = lockedYear ? `🔒 ${f.minYear}년부터` : (age < 19 ? '🔒 만 19세부터' : `창업하기 · ${fmtShort(f.cost)}`);
+    html += `
+    <div class="biz-card">
+      <div class="biz-top">
+        <div class="biz-nm"><span>${f.icon}</span><span class="n">${f.name}</span></div>
+        <div class="biz-sub" style="margin:0;">${riskTxt(f.risk)}</div>
+      </div>
+      <div class="biz-sub">${f.desc}<br>창업비 ${fmt(f.cost)} · 월 예상 순익 약 ${fmt(Math.floor(f.cost * f.rate))}</div>
+      ${lockedYear ? '' : eraTxt(f)}
+      <div class="biz-btns" style="grid-template-columns:1fr;">
+        <button class="biz-btn ${can ? 'gold' : 'off'}" onclick="bizFound('${f.id}')">${label}</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('bizBody').innerHTML = html;
+}
+
+/* 아래에서 위로 스와이프 → 창업 */
+(function initBizSwipe() {
+  const el = document.getElementById('life-screen');
+  let sx = 0, sy = null;
+  el.addEventListener('touchstart', e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (sy === null) return;
+    const t = e.changedTouches[0];
+    const dy = t.clientY - sy, dx = t.clientX - sx, low = sy > window.innerHeight * 0.55;
+    sy = null;
+    if (!low || dy > -70 || Math.abs(dx) > Math.abs(dy) * 0.6) return;
+    if (invOpen || bizOpen || document.getElementById('eventModal').classList.contains('show')) return;
+    openBiz();
+  });
+})();
 
 renderCharacterCreator();
 checkExistingAutoSave();
